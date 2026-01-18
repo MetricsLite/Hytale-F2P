@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hytale F2P Launcher</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="bg-black text-white overflow-hidden font-sans select-none" tabindex="-1">
+    <div class="absolute inset-0 z-0">
+        <img src="https://i.imgur.com/Visrk66.png" alt="Background" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-black/60"></div>
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg viewBox="0 0 256 256" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)" opacity="0.1"/%3E%3C/svg%3E')] opacity-20"></div>
+    </div>
+
+    <div class="flex w-full h-screen relative z-10">
+        <nav class="sidebar">
+            <div class="sidebar-logo">
+                                    <img src="./icon.png" alt="Hytale Logo" />
+
+            </div>
+
+            <div class="sidebar-nav">
+                <div class="nav-item active" data-page="play">
+                    <i class="fas fa-play"></i>
+                    <span class="nav-tooltip">Play</span>
+                </div>
+                <div class="nav-item" data-page="mods">
+                    <i class="fas fa-box"></i>
+                    <span class="nav-tooltip">Mods</span>
+                </div>
+                <div class="nav-item" data-page="news">
+                    <i class="fas fa-newspaper"></i>
+                    <span class="nav-tooltip">News</span>
+                </div>
+                <div class="nav-item" data-page="chat">
+                    <i class="fas fa-comments"></i>
+                    <span class="nav-tooltip">Players Chat</span>
+                </div>
+                <div class="nav-item" data-page="settings">
+                    <i class="fas fa-cog"></i>
+                    <span class="nav-tooltip">Settings</span>
+                </div>
+                <div class="nav-item" data-page="skins">
+                    <i class="fas fa-user"></i>
+                    <span class="nav-tooltip">Skins</span>
+                </div>
+            </div>
+
+           
+        </nav>
+
+        <main class="main-content">
+            <header class="header">
+                <div id="playersOnlineCounter" class="players-counter">
+                    <i class="fas fa-users"></i>
+                    <span class="counter-label">Players:</span>
+                    <span id="onlineCount" class="counter-value">0</span>
+                </div>
+
+                <div class="window-controls">
+                    <button class="control-btn minimize" onclick="window.electronAPI?.minimizeWindow()">
+                        <i class="fas fa-minus"></i>
+                    </button>
+                    <button class="control-btn close" onclick="window.electronAPI?.closeWindow()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="game-title-section">
+                <h1 class="game-title">
+                    HY<span class="title-accent">TALE</span>
+                </h1>
+                <div class="game-tags">
+                    <span class="tag">FREE TO PLAY</span>
+                </div>
+            </div>
+
+            <div class="content-pages">
+                <div id="install-page" class="page install-page">
+                    <div class="install-content">
+                        <div class="install-header">
+                            <h1 class="install-title">
+                                HYTA<span class="title-accent">LE</span>
+                            </h1>
+                            <p class="install-subtitle">FREE TO PLAY LAUNCHER</p>
+                        </div>
+                        
+                        <div class="install-form">
+                            <div class="form-group">
+                                <label class="form-label">Player Name</label>
+                                <input type="text" id="installPlayerName" placeholder="Enter your name" class="form-input" value="Player" />
+                            </div>
+                            
+                            <div class="form-group">
+                                <label class="checkbox-group">
+                                    <input type="checkbox" id="installCustomCheck" class="custom-checkbox">
+                                    <span class="checkbox-label">Custom Installation</span>
+                                </label>
+                                
+                                <div id="installCustomOptions" class="custom-options">
+                                    <div class="form-subgroup">
+                                        <label class="form-label">Installation Folder</label>
+                                        <div class="input-with-button">
+                                            <input type="text" id="installPath" placeholder="Default location" class="form-input" readonly />
+                                            <button onclick="browseInstallPath()" class="browse-btn">
+                                                <i class="fas fa-folder-open"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <button id="installBtn" class="install-button" onclick="installGame()">
+                                <i class="fas fa-download mr-2"></i>
+                                <span id="installText">INSTALL HYTALE</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="launcher-container" class="launcher-container" style="display: none;">
+                    <div id="play-page" class="page active">
+                        <div class="play-section">
+                            <div class="play-content">
+                                <div class="play-header">
+                                    <h2 class="play-title">
+                                        <i class="fas fa-play-circle mr-2"></i>
+                                        READY TO PLAY
+                                    </h2>
+                                    <p class="play-subtitle">Launch Hytale and enter the adventure</p>
+                                </div>
+                                
+                                <button id="homePlayBtn" class="home-play-button" onclick="launch()">
+                                    <i class="fas fa-play"></i>
+                                    <span>PLAY HYTALE</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="news-section">
+                            <div class="news-header">
+                                <h2 class="news-title">
+                                    <i class="fas fa-star mr-2"></i>
+                                    LATEST NEWS
+                                </h2>
+                                <button class="view-all-btn" onclick="navigateToPage('news')">
+                                    VIEW ALL <i class="fas fa-arrow-right ml-1"></i>
+                                </button>
+                            </div>
+                            <div id="newsGrid" class="news-grid-horizontal"></div>
+                        </div>
+                    </div>
+
+                    <div id="mods-page" class="page">
+                        <div class="mods-header">
+                            <div class="mods-search-container">
+                                <i class="fas fa-search"></i>
+                                <input type="text" id="modsSearch" placeholder="Search mods..." class="mods-search" />
+                            </div>
+                            <div class="mods-actions">
+                                <button id="myModsBtn" class="mods-btn-primary">
+                                    <i class="fas fa-box"></i>
+                                    MY MODS
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="browseModsList" class="mods-browse-container">
+                        </div>
+
+                        <div class="mods-pagination">
+                            <button id="prevPage" class="pagination-btn">
+                                <i class="fas fa-chevron-left"></i>
+                                PREVIOUS
+                            </button>
+                            <span class="pagination-info">
+                                Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                            </span>
+                            <button id="nextPage" class="pagination-btn">
+                                NEXT
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="news-page" class="page">
+                        <div class="news-header">
+                            <h2 class="news-title">
+                                <i class="fas fa-newspaper mr-2"></i>
+                                ALL NEWS
+                            </h2>
+                        </div>
+                        <div id="allNewsGrid" class="news-grid-full"></div>
+                    </div>
+
+                    <div id="chat-page" class="page">
+                        <div class="chat-container">
+                            <div class="chat-header">
+                                <h2 class="chat-title">
+                                    <i class="fas fa-comments mr-2"></i>
+                                    PLAYERS CHAT
+                                </h2>
+                                <div class="chat-online-badge">
+                                    <i class="fas fa-circle"></i>
+                                    <span id="chatOnlineCount">0</span> online
+                                </div>
+                            </div>
+                            
+                            <div class="chat-body">
+                                <div id="chatMessages" class="chat-messages">
+                                </div>
+                            </div>
+                            
+                            <div class="chat-footer">
+                                <div class="chat-input-container">
+                                    <textarea 
+                                        id="chatInput" 
+                                        class="chat-input" 
+                                        placeholder="Type your message... (Links are automatically censored)"
+                                        rows="1"
+                                        maxlength="500"
+                                    ></textarea>
+                                    <button id="chatSendBtn" class="chat-send-btn">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                                <div class="chat-footer-info">
+                                    <span class="chat-char-counter" id="chatCharCounter">0/500</span>
+                                    <span class="chat-warning-text">
+                                        <i class="fas fa-shield-alt"></i>
+                                        Secure chat - Links are censored
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="settings-page" class="page">
+                        <div class="settings-container">
+                            <div class="settings-header">
+                                <h2 class="settings-title">
+                                    <i class="fas fa-cog mr-2"></i>
+                                    SETTINGS
+                                </h2>
+                            </div>
+                            
+                            <div class="settings-content">
+                                <div class="settings-section">
+                                    <h3 class="settings-section-title">
+                                        <i class="fas fa-coffee"></i>
+                                        Java Runtime
+                                    </h3>
+                                    
+                                    <div class="settings-option">
+                                        <label class="settings-checkbox">
+                                            <input type="checkbox" id="customJavaCheck" />
+                                            <span class="checkmark"></span>
+                                            <div class="checkbox-content">
+                                                <div class="checkbox-title">Use Custom Java Path</div>
+                                                <div class="checkbox-description">Override the bundled Java runtime with your own installation</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                    
+                                    <div id="customJavaOptions" class="custom-java-options" style="display: none;">
+                                        <div class="settings-input-group">
+                                            <label class="settings-input-label">Java Executable Path</label>
+                                            <div class="settings-input-with-button">
+                                                <input 
+                                                    type="text" 
+                                                    id="customJavaPath" 
+                                                    class="settings-input" 
+                                                    placeholder="Select Java path..."
+                                                    readonly
+                                                />
+                                                <button id="browseJavaBtn" class="settings-browse-btn">
+                                                    <i class="fas fa-folder-open"></i>
+                                                    Browse
+                                                </button>
+                                            </div>
+                                            <p class="settings-hint">
+                                                <i class="fas fa-info-circle"></i>
+                                                Select the Java installation folder (supports Windows, Mac, Linux)
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="settings-section">
+                                    <h3 class="settings-section-title">
+                                        <i class="fas fa-gamepad"></i>
+                                        Game Options
+                                    </h3>
+                                    
+                                    <div class="settings-option">
+                                        <div class="settings-input-group">
+                                            <label class="settings-input-label">Player Name</label>
+                                            <input 
+                                                type="text" 
+                                                id="settingsPlayerName" 
+                                                class="settings-input" 
+                                                placeholder="Enter your player name"
+                                                maxlength="16"
+                                            />
+                                            <p class="settings-hint">
+                                                <i class="fas fa-user"></i>
+                                                This name will be used in-game (1-16 characters)
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="skins-page" class="page">
+                        <div class="placeholder-content">
+                            <i class="fas fa-user text-6xl mb-4 text-purple-500"></i>
+                            <h2>Skins</h2>
+                            <p>Skin customization coming soon...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="myModsModal" class="mods-modal">
+        <div class="mods-modal-content">
+            <div class="mods-modal-header">
+                <h2 class="mods-modal-title">
+                    <i class="fas fa-box mr-2"></i>
+                    MY MODS
+                </h2>
+                <button id="closeMyModsModal" class="mods-modal-close">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="mods-modal-body">
+                <div id="installedModsList" class="installed-mods-list">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="progressOverlay" class="progress-overlay" style="display: none;">
+        <div class="progress-content">
+            <div class="progress-info">
+                <span id="progressText">Initializing...</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div id="progressBarFill" class="progress-bar-fill"></div>
+            </div>
+            <div class="progress-details">
+                <span id="progressSpeed"></span>
+                <span id="progressSize"></span>
+            </div>
+        </div>
+    </div>
+
+    <div id="chatUsernameModal" class="chat-username-modal" style="display: none;">
+        <div class="chat-username-modal-content">
+            <div class="chat-username-modal-header">
+                <h2 class="chat-username-modal-title">
+                    <i class="fas fa-comments mr-2"></i>
+                    Join Chat
+                </h2>
+            </div>
+            <div class="chat-username-modal-body">
+                <p class="chat-username-modal-description">
+                    Choose a username to join the Players Chat
+                </p>
+                <div class="chat-username-input-group">
+                    <label for="chatUsernameInput" class="chat-username-label">Username</label>
+                    <input 
+                        type="text" 
+                        id="chatUsernameInput" 
+                        class="chat-username-input" 
+                        placeholder="Enter your username..."
+                        maxlength="20"
+                        autocomplete="off"
+                    />
+                    <span class="chat-username-hint">3-20 characters, letters, numbers, - and _ only</span>
+                    <span id="chatUsernameError" class="chat-username-error"></span>
+                </div>
+            </div>
+            <div class="chat-username-modal-footer">
+                <button id="chatUsernameCancel" class="chat-username-btn-cancel">
+                    <i class="fas fa-times"></i>
+                    Cancel
+                </button>
+                <button id="chatUsernameSubmit" class="chat-username-btn-submit">
+                    <i class="fas fa-check"></i>
+                    Join Chat
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="fixed bottom-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-sm px-4 py-2">
+        <div class="flex items-center justify-center text-xs text-gray-400">
+            <span>Made by <a href="https://github.com/amiayweb" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">@amiayweb</a></span>
+            <span class="mx-2">|</span>
+            <span>Contributors: 
+                <a href="https://github.com/chasem-dev" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">@chasem-dev</a>, 
+                <a href="https://github.com/crimera" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">@crimera</a>, 
+                <a href="https://github.com/sanasol" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">@sanasol</a>, 
+                <a href="https://github.com/Terromur" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">@terromur</a>, 
+                <a href="https://github.com/ericiskoolbeans" target="_blank" class="text-blue-400 hover:text-blue-300 transition-colors">@ericiskoolbeans</a>
+            </span>
+        </div>
+    </footer>
+
+    <script type="module" src="js/script.js"></script>
+    <script type="module" src="js/update.js"></script>
+</body>
+</html>
