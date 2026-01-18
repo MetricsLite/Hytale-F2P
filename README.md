@@ -186,6 +186,11 @@ This launcher is created for **educational purposes only**.
 
 ---
 
+## 📬 Contact
+
+[![Discord](https://img.shields.io/badge/Discord-amiay3-5865F2?logo=discord&logoColor=white)](https://discord.com/users/1433515183606599873)
+
+
 <div align="center">
 
 **⭐ Star this project if you found it helpful! ⭐**
