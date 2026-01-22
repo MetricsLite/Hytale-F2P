@@ -122,7 +122,10 @@
     "logsCopy": "Copiar",
     "logsRefresh": "Actualizar",
     "logsFolder": "Abrir Carpeta",
-    "logsLoading": "Cargando registros..."
+    "logsLoading": "Cargando registros...",
+    "closeLauncher": "Comportamiento del Launcher",
+    "closeOnStart": "Cerrar Launcher al iniciar el juego",
+    "closeOnStartDescription": "Cierra automáticamente el launcher después de que Hytale se haya iniciado"
   },
   "uuid": {
     "modalTitle": "Gestión de UUID",

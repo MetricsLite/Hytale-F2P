@@ -2,7 +2,8 @@ const path = require('path');
 require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const fs = require('fs');
-const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveChatUsername, loadChatUsername, saveChatColor, loadChatColor, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched } = require('./backend/launcher');
+const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveChatUsername, loadChatUsername, saveChatColor, loadChatColor, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, saveCloseLauncherOnStart, loadCloseLauncherOnStart, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched } = require('./backend/launcher');
+
 const UpdateManager = require('./backend/updateManager');
 const logger = require('./backend/logger');
 const profileManager = require('./backend/managers/profileManager');
@@ -189,7 +190,18 @@ function createWindow() {
     if (input.key === 'F5') {
       event.preventDefault();
     }
+
+    // Close application shortcuts
+    const isMac = process.platform === 'darwin';
+    const quitShortcut = (isMac && input.meta && input.key.toLowerCase() === 'q') || 
+                         (!isMac && input.control && input.key.toLowerCase() === 'q') ||
+                         (!isMac && input.alt && input.key === 'F4');
+
+    if (quitShortcut) {
+      app.quit();
+    }
   });
+
 
 
   mainWindow.webContents.on('context-menu', (e) => {
@@ -338,10 +350,9 @@ app.on('window-all-closed', () => {
 
   cleanupDiscordRPC();
 
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
+  app.quit();
 });
+
 
 ipcMain.handle('launch-game', async (event, playerName, javaPath, installPath, gpuPreference) => {
   try {
@@ -360,7 +371,18 @@ ipcMain.handle('launch-game', async (event, playerName, javaPath, installPath, g
 
     const result = await launchGameWithVersionCheck(playerName, progressCallback, javaPath, installPath, gpuPreference);
 
+    if (result.success && result.launched) {
+      const closeOnStart = loadCloseLauncherOnStart();
+      if (closeOnStart) {
+        console.log('Close Launcher on start enabled, quitting application...');
+        setTimeout(() => {
+          app.quit();
+        }, 1000);
+      }
+    }
+
     return result;
+
   } catch (error) {
     console.error('Launch error:', error);
     const errorMessage = error.message || error.toString();
@@ -479,7 +501,17 @@ ipcMain.handle('load-language', () => {
   return loadLanguage();
 });
 
+ipcMain.handle('save-close-launcher', (event, enabled) => {
+  saveCloseLauncherOnStart(enabled);
+  return { success: true };
+});
+
+ipcMain.handle('load-close-launcher', () => {
+  return loadCloseLauncherOnStart();
+});
+
 ipcMain.handle('select-install-path', async () => {
+
   const result = await dialog.showOpenDialog(mainWindow, {
     properties: ['openDirectory'],
     title: 'Select Installation Folder'
@@ -805,10 +837,9 @@ ipcMain.handle('open-download-page', async () => {
     await shell.openExternal(updateManager.getDownloadUrl());
 
     setTimeout(() => {
-      if (mainWindow && !mainWindow.isDestroyed()) {
-        mainWindow.close();
-      }
+      app.quit();
     }, 1000);
+
 
     return { success: true };
   } catch (error) {
@@ -851,10 +882,9 @@ ipcMain.handle('get-detected-gpu', () => {
 });
 
 ipcMain.handle('window-close', () => {
-  if (mainWindow && !mainWindow.isDestroyed()) {
-    mainWindow.close();
-  }
+  app.quit();
 });
+
 
 ipcMain.handle('window-minimize', () => {
   if (mainWindow && !mainWindow.isDestroyed()) {
