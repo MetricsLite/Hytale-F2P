@@ -728,11 +728,19 @@ ipcMain.handle('check-for-updates', async () => {
   try {
     if (appUpdater) {
       const result = await appUpdater.checkForUpdates();
+      const currentVersion = app.getVersion();
+      const remoteVersion = result?.updateInfo?.version;
+      
+      // Only show update if remote version is actually newer than current
+      const updateAvailable = remoteVersion && 
+                             remoteVersion !== currentVersion && 
+                             isVersionNewer(remoteVersion, currentVersion);
+      
       return {
-        updateAvailable: result?.updateInfo ? true : false,
-        version: result?.updateInfo?.version,
-        newVersion: result?.updateInfo?.version,
-        currentVersion: app.getVersion()
+        updateAvailable: updateAvailable,
+        version: remoteVersion,
+        newVersion: remoteVersion,
+        currentVersion: currentVersion
       };
     }
     return { updateAvailable: false, error: 'AppUpdater not initialized' };
@@ -741,6 +749,27 @@ ipcMain.handle('check-for-updates', async () => {
     return { updateAvailable: false, error: error.message };
   }
 });
+
+// Helper function to compare semantic versions
+function isVersionNewer(version1, version2) {
+  // Simple semantic version comparison
+  // Remove any non-numeric suffixes for comparison
+  const v1Parts = version1.replace(/[^0-9.]/g, '').split('.').map(Number);
+  const v2Parts = version2.replace(/[^0-9.]/g, '').split('.').map(Number);
+  
+  // Pad arrays to same length
+  const maxLength = Math.max(v1Parts.length, v2Parts.length);
+  while (v1Parts.length < maxLength) v1Parts.push(0);
+  while (v2Parts.length < maxLength) v2Parts.push(0);
+  
+  // Compare each part
+  for (let i = 0; i < maxLength; i++) {
+    if (v1Parts[i] > v2Parts[i]) return true;
+    if (v1Parts[i] < v2Parts[i]) return false;
+  }
+  
+  return false; // Versions are equal
+}
 
 ipcMain.handle('open-download-page', async () => {
   try {

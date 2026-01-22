@@ -335,7 +335,12 @@ class ClientUpdateManager {
     async checkForUpdatesOnDemand() {
         try {
             const updateInfo = await window.electronAPI.checkForUpdates();
-            if (updateInfo.updateAvailable) {
+            
+            // Double-check that versions are actually different before showing popup
+            if (updateInfo.updateAvailable && 
+                updateInfo.newVersion && 
+                updateInfo.currentVersion &&
+                updateInfo.newVersion !== updateInfo.currentVersion) {
                 this.showUpdatePopup(updateInfo);
             }
             return updateInfo;

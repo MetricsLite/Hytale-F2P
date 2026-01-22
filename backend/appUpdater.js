@@ -43,23 +43,32 @@ class AppUpdater {
 
     autoUpdater.on('update-available', (info) => {
       console.log('Update available:', info.version);
+      const currentVersion = app.getVersion();
+      const newVersion = info.version;
+      
+      // Only proceed if the new version is actually different from current
+      if (newVersion === currentVersion) {
+        console.log('Update version matches current version, ignoring update-available event');
+        return;
+      }
+      
       this.updateAvailable = true;
-      this.updateVersion = info.version;
+      this.updateVersion = newVersion;
       this.autoUpdateAvailable = true; // Reset flag when new update is available
       
       if (this.mainWindow && !this.mainWindow.isDestroyed()) {
         this.mainWindow.webContents.send('update-available', {
-          version: info.version,
-          newVersion: info.version,
-          currentVersion: app.getVersion(),
+          version: newVersion,
+          newVersion: newVersion,
+          currentVersion: currentVersion,
           releaseName: info.releaseName,
           releaseNotes: info.releaseNotes
         });
         // Also send to the old popup handler for compatibility
         this.mainWindow.webContents.send('show-update-popup', {
-          currentVersion: app.getVersion(),
-          newVersion: info.version,
-          version: info.version
+          currentVersion: currentVersion,
+          newVersion: newVersion,
+          version: newVersion
         });
       }
     });
