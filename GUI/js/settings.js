@@ -7,6 +7,7 @@ let settingsPlayerName;
 let discordRPCCheck;
 let closeLauncherCheck;
 let gpuPreferenceRadios;
+let gameBranchRadios;
 
 
 // UUID Management elements
@@ -165,6 +166,7 @@ function setupSettingsElements() {
   discordRPCCheck = document.getElementById('discordRPCCheck');
   closeLauncherCheck = document.getElementById('closeLauncherCheck');
   gpuPreferenceRadios = document.querySelectorAll('input[name="gpuPreference"]');
+  gameBranchRadios = document.querySelectorAll('input[name="gameBranch"]');
 
 
   // UUID Management elements
@@ -250,6 +252,12 @@ function setupSettingsElements() {
         await saveGpuPreference();
         await updateGpuLabel();
       });
+    });
+  }
+
+  if (gameBranchRadios) {
+    gameBranchRadios.forEach(radio => {
+      radio.addEventListener('change', handleBranchChange);
     });
   }
 }
@@ -498,6 +506,7 @@ async function loadAllSettings() {
   await loadDiscordRPC();
   await loadCloseLauncher();
   await loadGpuPreference();
+  await loadVersionBranch();
 }
 
 
@@ -891,4 +900,177 @@ function showNotification(message, type = 'info') {
       }
     }, 300);
   }, 3000);
+}// Append this to settings.js for branch management
+
+// === Game Branch Management ===
+async function handleBranchChange(event) {
+  const newBranch = event.target.value;
+  const currentBranch = await loadVersionBranch();
+
+  if (newBranch === currentBranch) {
+    return; // No change
+  }
+
+  // Confirm branch change
+  const branchName = window.i18n ? 
+    window.i18n.t(`settings.branch${newBranch === 'pre-release' ? 'PreRelease' : 'Release'}`) : 
+    newBranch;
+  
+  const message = window.i18n ?
+    window.i18n.t('settings.branchWarning') :
+    'Changing branch will download and install a different game version';
+
+  showCustomConfirm(
+    message,
+    window.i18n ? window.i18n.t('settings.gameBranch') : 'Game Branch',
+    async () => {
+      await switchBranch(newBranch);
+    },
+    () => {
+      // Cancel: revert radio selection
+      loadVersionBranch().then(branch => {
+        const radioToCheck = document.querySelector(`input[name="gameBranch"][value="${branch}"]`);
+        if (radioToCheck) {
+          radioToCheck.checked = true;
+        }
+      });
+    }
+  );
+}
+
+async function switchBranch(newBranch) {
+  try {
+    const switchingMsg = window.i18n ?
+      window.i18n.t('settings.branchSwitching').replace('{branch}', newBranch) :
+      `Switching to ${newBranch}...`;
+    
+    showNotification(switchingMsg, 'info');
+
+    // Lock play button
+    const playButton = document.getElementById('playButton');
+    if (playButton) {
+      playButton.disabled = true;
+      playButton.classList.add('disabled');
+    }
+
+    // Save new branch
+    await window.electronAPI.saveVersionBranch(newBranch);
+
+    const switchedMsg = window.i18n ?
+      window.i18n.t('settings.branchSwitched').replace('{branch}', newBranch) :
+      `Switched to ${newBranch} successfully!`;
+    
+    showNotification(switchedMsg, 'success');
+
+    // Suggest reinstalling
+    setTimeout(() => {
+      const branchLabel = newBranch === 'release' ? 
+        (window.i18n ? window.i18n.t('install.releaseVersion') : 'Release') : 
+        (window.i18n ? window.i18n.t('install.preReleaseVersion') : 'Pre-Release');
+      
+      const confirmMsg = window.i18n ?
+        window.i18n.t('settings.branchInstallConfirm').replace('{branch}', branchLabel) :
+        `The game will be installed for the ${branchLabel} branch. Continue?`;
+      
+      showCustomConfirm(
+        confirmMsg,
+        window.i18n ? window.i18n.t('settings.installRequired') : 'Installation Required',
+        async () => {
+          // Show progress and trigger game installation
+          if (window.LauncherUI) {
+            window.LauncherUI.showProgress();
+          }
+
+          try {
+            const playerName = await window.electronAPI.loadUsername();
+            const result = await window.electronAPI.installGame(playerName || 'Player', '', '', newBranch);
+            
+            if (result.success) {
+              const successMsg = window.i18n ? 
+                window.i18n.t('progress.installationComplete') : 
+                'Installation completed successfully!';
+              
+              showNotification(successMsg, 'success');
+              
+              setTimeout(() => {
+                if (window.LauncherUI) {
+                  window.LauncherUI.hideProgress();
+                }
+                
+                // Unlock play button
+                const playButton = document.getElementById('playButton');
+                if (playButton) {
+                  playButton.disabled = false;
+                  playButton.classList.remove('disabled');
+                }
+              }, 2000);
+            } else {
+              throw new Error(result.error || 'Installation failed');
+            }
+          } catch (error) {
+            console.error('Installation error:', error);
+            const errorMsg = window.i18n ? 
+              window.i18n.t('progress.installationFailed').replace('{error}', error.message) : 
+              `Installation failed: ${error.message}`;
+            
+            showNotification(errorMsg, 'error');
+            
+            if (window.LauncherUI) {
+              window.LauncherUI.hideProgress();
+            }
+            
+            // Unlock play button
+            const playButton = document.getElementById('playButton');
+            if (playButton) {
+              playButton.disabled = false;
+              playButton.classList.remove('disabled');
+            }
+          }
+        },
+        () => {
+          // Cancel - unlock play button
+          const playButton = document.getElementById('playButton');
+          if (playButton) {
+            playButton.disabled = false;
+            playButton.classList.remove('disabled');
+          }
+        },
+        window.i18n ? window.i18n.t('common.install') : 'Install',
+        window.i18n ? window.i18n.t('common.cancel') : 'Cancel'
+      );
+    }, 500);
+
+  } catch (error) {
+    console.error('Error switching branch:', error);
+    showNotification(`Failed to switch branch: ${error.message}`, 'error');
+
+    // Revert radio selection
+    loadVersionBranch().then(branch => {
+      const radioToCheck = document.querySelector(`input[name="gameBranch"][value="${branch}"]`);
+      if (radioToCheck) {
+        radioToCheck.checked = true;
+      }
+    });
+  }
+}
+
+async function loadVersionBranch() {
+  try {
+    if (window.electronAPI && window.electronAPI.loadVersionBranch) {
+      const branch = await window.electronAPI.loadVersionBranch();
+      
+      // Update radio buttons
+      if (gameBranchRadios) {
+        gameBranchRadios.forEach(radio => {
+          radio.checked = radio.value === branch;
+        });
+      }
+
+      return branch;
+    }
+    return 'release'; // Default
+  } catch (error) {
+    console.error('Error loading version branch:', error);
+    return 'release';
+  }
 }
