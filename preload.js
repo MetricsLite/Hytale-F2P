@@ -35,6 +35,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   openGameLocation: () => ipcRenderer.invoke('open-game-location'),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
   loadSettings: () => ipcRenderer.invoke('load-settings'),
+  getEnvVar: (key) => ipcRenderer.invoke('get-env-var', key),
   getLocalAppData: () => ipcRenderer.invoke('get-local-app-data'),
   getModsPath: () => ipcRenderer.invoke('get-mods-path'),
   loadInstalledMods: (modsPath) => ipcRenderer.invoke('load-installed-mods', modsPath),
@@ -129,5 +130,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
   onUpdateDownloaded: (callback) => {
     ipcRenderer.on('update-downloaded', (event, data) => callback(data));
+  },
+  onUpdateError: (callback) => {
+    ipcRenderer.on('update-error', (event, data) => callback(data));
   }
 });
