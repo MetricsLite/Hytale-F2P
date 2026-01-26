@@ -187,9 +187,10 @@ async function getModsPath(customInstallPath = null) {
       } catch (e) { /* ignore */ }
 
       if (!isBrokenLink) {
-        // Ensure the Mods directory exists
-        fs.mkdirSync(modsPath, { recursive: true });
+        fs.unlinkSync(modsPath); // Remove broken symlink
       }
+      // Ensure the Mods directory exists
+      fs.mkdirSync(modsPath, { recursive: true });
     }
     if (!fs.existsSync(disabledModsPath)) {
       fs.mkdirSync(disabledModsPath, { recursive: true });
