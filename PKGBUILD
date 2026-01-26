@@ -1,3 +1,4 @@
+# Maintainer: Terromur <terromuroz@proton.me>
 # Maintainer: Fazri Gading <fazrigading@gmail.com>
 # This PKGBUILD is for Github Releases
 pkgname=Hytale-F2P
