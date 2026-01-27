@@ -4,6 +4,7 @@ const i18n = (() => {
   let translations = {};
   const availableLanguages = [
     { code: 'en', name: 'English' },
+    { code: 'fr', name: 'Français' },
     { code: 'es-ES', name: 'Español (España)' },
     { code: 'pt-BR', name: 'Portuguese (Brazil)' },
     { code: 'tr-TR', name: 'Turkish (Turkey)' },
