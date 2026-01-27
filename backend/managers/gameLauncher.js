@@ -277,13 +277,23 @@ exec "$REAL_JAVA" "\${ARGS[@]}"
   console.log('Starting game...');
   console.log(`Command: "${clientPath}" ${args.join(' ')}`);
 
-   const env = { ...process.env };
+  const env = { ...process.env };
 
-   const waylandEnv = setupWaylandEnvironment();
-   Object.assign(env, waylandEnv);
+  const waylandEnv = setupWaylandEnvironment();
+  Object.assign(env, waylandEnv);
 
-   const gpuEnv = setupGpuEnvironment(gpuPreference);
-   Object.assign(env, gpuEnv);
+  const gpuEnv = setupGpuEnvironment(gpuPreference);
+  Object.assign(env, gpuEnv);
+
+  // FIX: SDL3_Image on Ubuntu LTS, Linux Mint, Debian stable, Steam Deck (X11 fallback) requires LD_LIBRARY_PATH to find its libs
+  if (process.platform === "linux") {
+    const clientDir = path.dirname(clientPath);
+
+    env.LD_LIBRARY_PATH = [
+      clientDir,
+      env.LD_LIBRARY_PATH
+    ].filter(Boolean).join(":");
+  }
 
   try {
     let spawnOptions = {
