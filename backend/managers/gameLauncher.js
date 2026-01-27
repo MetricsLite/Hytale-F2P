@@ -12,6 +12,7 @@ const { resolveJavaPath, getJavaExec, getBundledJavaPath, detectSystemJava, JAVA
 const { getLatestClientVersion } = require('../services/versionManager');
 const { updateGameFiles } = require('./gameManager');
 const { syncModsForCurrentProfile } = require('./modManager');
+const { getUserDataPath } = require('../utils/userDataMigration');
 
 // Client patcher for custom auth server (sanasol.ws)
 let clientPatcher = null;
@@ -106,7 +107,9 @@ async function launchGame(playerName = 'Player', progressCallback, javaPathOverr
   const customAppDir = getResolvedAppDir(installPathOverride);
   const customGameDir = path.join(customAppDir, branch, 'package', 'game', 'latest');
   const customJreDir = path.join(customAppDir, branch, 'package', 'jre', 'latest');
-  const userDataDir = path.join(customGameDir, 'Client', 'UserData');
+  
+  // NEW 2.1.2: Use centralized UserData location
+  const userDataDir = getUserDataPath();
 
   const gameLatest = customGameDir;
   let clientPath = findClientPath(gameLatest);

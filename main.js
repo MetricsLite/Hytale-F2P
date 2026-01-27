@@ -5,6 +5,7 @@ const { autoUpdater } = require('electron-updater');
 const fs = require('fs');
 const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveChatUsername, loadChatUsername, saveChatColor, loadChatColor, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, saveCloseLauncherOnStart, loadCloseLauncherOnStart, saveLauncherHardwareAcceleration, loadLauncherHardwareAcceleration, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched } = require('./backend/launcher');
 const { retryPWRDownload } = require('./backend/managers/gameManager');
+const { migrateUserDataToCentralized } = require('./backend/utils/userDataMigration');
 
 // Handle Hardware Acceleration
 try {
@@ -297,6 +298,14 @@ app.whenReady().then(async () => {
 
   // Initialize Profile Manager (runs migration if needed)
   profileManager.init();
+
+  // Migrate UserData to centralized location (v2.1.2+)
+  console.log('[Startup] Checking UserData migration...');
+  try {
+    await migrateUserDataToCentralized();
+  } catch (error) {
+    console.error('[Startup] UserData migration failed:', error);
+  }
 
   createSplashScreen();
 
