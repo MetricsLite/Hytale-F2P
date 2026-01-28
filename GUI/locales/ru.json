@@ -81,9 +81,9 @@
     "joinButton": "Присоединиться к чату",
     "colorModal": {
       "title": "Выберите цвет ника",
-      "chooseSolid": "Choose a solid color:",
+      "chooseSolid": "Выберите цвет:",
       "customColor": "Модифицированный цвет:",
-      "preview": "Preview:",
+      "preview": "Предварительный просмотр:",
       "previewUsername": "Ник",
       "apply": "Применить цвет"
     }
