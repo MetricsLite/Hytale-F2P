@@ -141,7 +141,7 @@
     "branchSwitching": "Переключение на {branch}...",
     "branchSwitched": "Переключение на {branch} выполнено успешно!",
     "installRequired": "Необходима установка",
-    "branchInstallConfirm": "Игры будет установлена для ветки {branch}. Продолжить?"
+    "branchInstallConfirm": "Игра будет установлена для ветки {branch}. Продолжить?"
   },
   "uuid": {
     "modalTitle": "Управление UUID",
