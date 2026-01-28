@@ -51,7 +51,7 @@
     "installed": "УСТАНОВЛЕННЫЕ",
     "enable": "ВКЛЮЧИТЬ",
     "disable": "ВЫКЛЮЧИТЬ",
-    "active": "ВКЛЮЧЕН",
+    "active": "ВКЛЮЧЁН",
     "disabled": "ВЫКЛЮЧЕН",
     "delete": "Удалить мод",
     "noDescription": "Нет доступного описания",
@@ -68,7 +68,7 @@
   "chat": {
     "title": "ЧАТ ИГРОКОВ",
     "pickColor": "Цвет",
-    "inputPlaceholder": "Введите свое сообщение...",
+    "inputPlaceholder": "Введите своё сообщение...",
     "send": "Отправить",
     "online": "онлайн",
     "charCounter": "{current}/{max}",
