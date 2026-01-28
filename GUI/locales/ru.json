@@ -136,7 +136,7 @@
     "gameBranch": "Ветка игры",
     "branchRelease": "Релиз",
     "branchPreRelease": "Пре-Релиз",
-    "branchHint": "Переключает между релизом и бетой игры",
+    "branchHint": "Переключает между релизом и пре-релизом игры",
     "branchWarning": "Изменение ветки скачает и установит другую версию игры",
     "branchSwitching": "Переключение на {branch}...",
     "branchSwitched": "Переключение на {branch} выполнено успешно!",
