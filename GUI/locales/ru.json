@@ -17,11 +17,11 @@
     "playerNamePlaceholder": "Введите ваш ник",
     "gameBranch": "Версия игры",
     "releaseVersion": "Релиз (Стабильная)",
-    "preReleaseVersion": "Бета (Эксперементально)",
+    "preReleaseVersion": "Бета (Экспериментально)",
     "customInstallation": "Модифицированная установка",
     "installationFolder": "Папка установки",
     "pathPlaceholder": "Путь по умолчанию",
-    "browse": "Browse",
+    "browse": "Обзор",
     "installButton": "УСТАНОВИТЬ HYTALE",
     "installing": "УСТАНОВКА..."
   },
@@ -30,7 +30,7 @@
     "subtitle": "Запусти Hytale и приготовься к приключению!",
     "playButton": "ЗАПУСТИТЬ HYTALE",
     "latestNews": "ПОСЛЕДНИЕ НОВОСТИ",
-    "viewAll": "ПОСМОТРЕТЬ ВСЕ",
+    "viewAll": "ПОСМОТРЕТЬ ВСЁ",
     "checking": "ПРОВЕРКА...",
     "play": "ЗАПУСТИТЬ"
   },
@@ -38,7 +38,7 @@
     "searchPlaceholder": "Искать моды...",
     "myMods": "Мои моды",
     "previous": "Предыдущая",
-    "next": "Вперед",
+    "next": "Вперёд",
     "page": "Страница",
     "of": "",
     "modalTitle": "МОИ МОДЫ",
@@ -92,7 +92,7 @@
     "title": "НАСТРОЙКИ",
     "java": "Рантайм JAVA",
     "useCustomJava": "Укажите свой путь Java",
-    "javaDescription": "Override the bundled Java runtime with your own installation",
+    "javaDescription": "Переопределить встроенный рантайм Java с вашей установкой",
     "javaPath": "Путь исполняемого файла Java",
     "javaPathPlaceholder": "Выберите путь Java...",
     "javaBrowse": "Обзор",
@@ -162,8 +162,8 @@
     "createProfile": "Создать профиль"
   },
   "discord": {
-    "notificationText": "Join our Discord community!",
-    "joinButton": "Join Discord"
+    "notificationText": "Присоединитесь к нашему сообществу в Discord!",
+    "joinButton": "Присоединиться к Discord"
   },
   "common": {
     "confirm": "Подтвердить",
@@ -184,7 +184,7 @@
     "discordEnabled": "Discord Rich Presence включен",
     "discordDisabled": "Discord Rich Presence выключен",
     "discordSaveFailed": "Не удалось сохранить настройку Discord",
-    "playerNameRequired": "Please enter a valid player name",
+    "playerNameRequired": "Пожалуйста, введите действительное имя игрока",
     "playerNameSaved": "Имя игрока успешно сохранено!",
     "playerNameSaveFailed": "Не удалось сохранить имя игрока",
     "uuidCopied": "UUID скопирован в буфер обмена!",
@@ -209,7 +209,7 @@
     "modsDownloadFailed": "Не получилось скачать мод: {error}",
     "modsToggleFailed": "Не получилось включить мод: {error}",
     "modsDeleteFailed": "Не получилось удалить мод: {error}",
-    "modsModNotFound": "Mod information not found",
+    "modsModNotFound": "Информация по моду не найдена",
     "hwAccelSaved": "Настройка аппаратного ускорения сохранена!",
     "hwAccelSaveFailed": "Не удалось сохранить настройку аппаратного ускорения"
   },
@@ -241,7 +241,7 @@
     "uninstallingGame": "Удаление игры...",
     "gameUninstalled": "Игра успешно удалена!",
     "uninstallFailed": "Удаление игры не удалось: {error}",
-    "startingUpdate": "Starting mandatory game update...",
+    "startingUpdate": "Начало обязательного обновления игры...",
     "installationComplete": "Установка успешно завершена!",
     "installationFailed": "Установка не удалась: {error}",
     "installingGameFiles": "Установка файлов игры...",
