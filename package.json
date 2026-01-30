@@ -91,10 +91,19 @@
     },
     "mac": {
       "target": [
-        "dmg", 
-        "zip"
+        {
+          "target": "dmg",
+          "arch": [
+            "universal"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "universal"
+          ]
+        }
       ],
-      "arch": ["universal"],
       "icon": "build/icon.icns",
       "category": "public.app-category.games"
     },
