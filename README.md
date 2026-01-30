@@ -307,6 +307,7 @@ See [BUILD.md](docs/BUILD.md) for comprehensive build instructions.
 
 ### 🆕 v2.2.0
 - 🔃 **Game Patches Auto-Update Improvement:** No need to install 1.5GB for every updates! Game updates now reduced to almost **~90%** (Hytale Game Update 3 to 4 only take ~150MB).
+- 🩹 **Improved Patch System Pre-Release JAR:** In previous version, only Release JAR could be patched. Now it also can be used for Pre-Release JAR!
 - 🔗 **Fix Mods Manager Issue:** Mods now can be downloaded seamlessly from the launcher, use Profiles to install your preferred mod. It will also automatically copy from selected `Profile/<profilename>` to the `Mods` folder.
 - 💾 **New User Data Location:** UserData Migration to Centralized Location. User data now preserves in `HytaleSaves` located beside `HytaleF2P` folder.
 - 🎮 **SteamDeck and Ubuntu/Debian-based Library Fix:** Replace bundled `libzstd.so` with system version to fix `glibc 2.41+` crash.
