@@ -528,11 +528,12 @@ class ClientPatcher {
   /**
    * Patch server JAR by downloading pre-patched version from CDN
    */
-  async patchServer(serverPath, progressCallback) {
+  async patchServer(serverPath, progressCallback, branch = 'release') {
     const newDomain = this.getNewDomain();
 
     console.log('=== Server Patcher (Pre-patched Download) ===');
     console.log(`Target: ${serverPath}`);
+    console.log(`Branch: ${branch}`);
     console.log(`Domain: ${newDomain}`);
 
     if (!fs.existsSync(serverPath)) {
@@ -548,10 +549,10 @@ class ClientPatcher {
     if (fs.existsSync(patchFlagFile)) {
       try {
         const flagData = JSON.parse(fs.readFileSync(patchFlagFile, 'utf8'));
-        if (flagData.domain === newDomain) {
+        if (flagData.domain === newDomain && flagData.branch === branch) {
           // Verify JAR actually contains DualAuth classes (game may have auto-updated)
           if (this.serverJarContainsDualAuth(serverPath)) {
-            console.log(`Server already patched for ${newDomain}, skipping`);
+            console.log(`Server already patched for ${newDomain} (${branch}), skipping`);
             if (progressCallback) progressCallback('Server already patched', 100);
             return { success: true, alreadyPatched: true };
           } else {
@@ -560,7 +561,7 @@ class ClientPatcher {
             try { fs.unlinkSync(patchFlagFile); } catch (e) { /* ignore */ }
           }
         } else {
-          console.log(`Server patched for "${flagData.domain}", need to change to "${newDomain}"`);
+          console.log(`Server patched for "${flagData.domain}" (${flagData.branch}), need to change to "${newDomain}" (${branch})`);
           needsRestore = true;
         }
       } catch (e) {
@@ -605,7 +606,16 @@ class ClientPatcher {
 
     try {
       const https = require('https');
-      const url = 'https://pub-027b315ece074e2e891002ca38384792.r2.dev/HytaleServer.jar';
+      
+      // Use different URL for pre-release vs release
+      let url;
+      if (branch === 'pre-release') {
+        url = 'https://patcher.authbp.xyz/download/patched_prerelease';
+        console.log('  Using pre-release patched server from:', url);
+      } else {
+        url = 'https://patcher.authbp.xyz/download/patched_release';
+        console.log('  Using release patched server from:', url);
+      }
 
       await new Promise((resolve, reject) => {
         const handleResponse = (response) => {
@@ -677,11 +687,16 @@ class ClientPatcher {
       console.log('  Verification successful - DualAuth classes present');
 
       // Mark as patched
+      const sourceUrl = branch === 'pre-release' 
+        ? 'https://patcher.authbp.xyz/download/patched_prerelease'
+        : 'https://patcher.authbp.xyz/download/patched_release';
+      
       fs.writeFileSync(patchFlagFile, JSON.stringify({
         domain: newDomain,
+        branch: branch,
         patchedAt: new Date().toISOString(),
         patcher: 'PrePatchedDownload',
-        source: 'https://download.sanasol.ws/download/HytaleServer.jar'
+        source: sourceUrl
       }));
 
       if (progressCallback) progressCallback('Server patching complete', 100);
@@ -745,7 +760,7 @@ class ClientPatcher {
   /**
    * Ensure both client and server are patched before launching
    */
-  async ensureClientPatched(gameDir, progressCallback, javaPath = null) {
+  async ensureClientPatched(gameDir, progressCallback, javaPath = null, branch = 'release') {
     const results = {
       client: null,
       server: null,
@@ -772,7 +787,7 @@ class ClientPatcher {
         if (progressCallback) {
           progressCallback(`Server: ${msg}`, pct ? 50 + pct / 2 : null);
         }
-      });
+      }, branch);
     } else {
       console.warn('Could not find HytaleServer.jar');
       results.server = { success: false, error: 'Server JAR not found' };

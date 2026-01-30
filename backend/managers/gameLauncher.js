@@ -179,7 +179,7 @@ async function launchGame(playerName = 'Player', progressCallback, javaPathOverr
         if (progressCallback && msg) {
           progressCallback(msg, percent, null, null, null);
         }
-      });
+       }, null, branch);
 
       if (patchResult.success) {
         console.log(`Game patched successfully (${patchResult.patchCount} total occurrences)`);
