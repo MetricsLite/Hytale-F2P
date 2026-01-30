@@ -45,7 +45,6 @@
   },
   "license": "MIT",
   "devDependencies": {
-    "@electron/rebuild": "^4.0.3",
     "electron": "^40.0.0",
     "electron-builder": "^26.4.0"
   },
@@ -59,13 +58,10 @@
     "tar": "^7.5.7",
     "uuid": "^9.0.1"
   },
-  "overrides": {
-    "tar": "$tar"
-  },
   "build": {
     "appId": "com.hytalef2p.launcher",
     "productName": "Hytale F2P Launcher",
-    "artifactName": "${name}_${version}_${arch}.${ext}",
+    "artifactName": "${name}_${version}.${ext}",
     "directories": {
       "output": "dist"
     },
@@ -106,6 +102,7 @@
         }
       ],
       "icon": "build/icon.icns",
+      "artifactName": "${name}_${version}_${arch}.${ext}",
       "category": "public.app-category.games"
     },
     "nsis": {
