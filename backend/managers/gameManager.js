@@ -5,6 +5,7 @@ const { getResolvedAppDir, findClientPath, findUserDataPath, findUserDataRecursi
 const { getOS, getArch } = require('../utils/platformUtils');
 const { downloadFile, retryDownload, retryStalledDownload, MAX_AUTOMATIC_STALL_RETRIES } = require('../utils/fileManager');
 const { getLatestClientVersion, getInstalledClientVersion } = require('../services/versionManager');
+const { FORCE_CLEAN_INSTALL_VERSION, CLEAN_INSTALL_TEST_VERSION } = require('../core/testConfig');
 const { installButler } = require('./butlerManager');
 const { downloadAndReplaceHomePageUI, downloadAndReplaceLogo } = require('./uiFileManager');
 const { saveUsername, saveInstallPath, loadJavaPath, CONFIG_FILE, loadConfig, loadVersionBranch, saveVersionClient, loadVersionClient } = require('../core/config');
@@ -528,31 +529,33 @@ async function installGame(playerName = 'Player', progressCallback, javaPathOver
   console.log(`Installing game files for branch: ${branch}...`);
 
   const latestVersion = await getLatestClientVersion(branch);
+  const targetVersion = FORCE_CLEAN_INSTALL_VERSION ? CLEAN_INSTALL_TEST_VERSION : latestVersion;
+  
+  if (FORCE_CLEAN_INSTALL_VERSION) {
+    console.log(`TESTING MODE: Forcing installation of ${targetVersion} instead of ${latestVersion}`);
+  }
+  
   let pwrFile;
   try {
-    pwrFile = await downloadPWR(branch, latestVersion, progressCallback, customCacheDir);
+    pwrFile = await downloadPWR(branch, targetVersion, progressCallback, customCacheDir);
     
-    // If downloadPWR returns false, it means the file doesn't exist or is invalid
-    // We should retry the download with a manual retry flag
     if (!pwrFile) {
       console.log('[Install] PWR file not found or invalid, attempting retry...');
-      pwrFile = await retryPWRDownload(branch, latestVersion, progressCallback, customCacheDir);
+      pwrFile = await retryPWRDownload(branch, targetVersion, progressCallback, customCacheDir);
     }
     
-    // Double-check we have a valid file path
     if (!pwrFile || typeof pwrFile !== 'string') {
       throw new Error(`PWR file download failed: received invalid path ${pwrFile}. Please retry download.`);
     }
     
   } catch (downloadError) {
     console.error('[Install] PWR download failed:', downloadError.message);
-    throw downloadError; // Re-throw to be handled by the main installGame error handler
+    throw downloadError;
   }
   
   await applyPWR(pwrFile, progressCallback, customGameDir, customToolsDir, branch, customCacheDir);
 
-  // Save the installed version and branch to config
-  saveVersionClient(latestVersion);
+  saveVersionClient(targetVersion);
   const { saveVersionBranch } = require('../core/config');
   saveVersionBranch(branch);
 

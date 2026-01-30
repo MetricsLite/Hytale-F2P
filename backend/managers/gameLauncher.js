@@ -10,7 +10,8 @@ const { setupWaylandEnvironment, setupGpuEnvironment } = require('../utils/platf
 const { saveUsername, saveInstallPath, loadJavaPath, getUuidForUser, getAuthServerUrl, getAuthDomain, loadVersionBranch, loadVersionClient, saveVersionClient } = require('../core/config');
 const { resolveJavaPath, getJavaExec, getBundledJavaPath, detectSystemJava, JAVA_EXECUTABLE } = require('./javaManager');
 const { getLatestClientVersion } = require('../services/versionManager');
-const { updateGameFiles } = require('./gameManager');
+const { FORCE_CLEAN_INSTALL_VERSION, CLEAN_INSTALL_TEST_VERSION } = require('../core/testConfig');
+const { ensureGameInstalled } = require('./differentialUpdateManager');
 const { syncModsForCurrentProfile } = require('./modManager');
 const { getUserDataPath } = require('../utils/userDataMigration');
 const { syncServerList } = require('../utils/serverListSync');
@@ -446,7 +447,13 @@ async function launchGameWithVersionCheck(playerName = 'Player', progressCallbac
       const customCacheDir = path.join(customAppDir, 'cache');
 
       try {
-        await updateGameFiles(latestVersion, progressCallback, customGameDir, customToolsDir, customCacheDir, branch);
+        let versionToInstall = latestVersion;
+        if (FORCE_CLEAN_INSTALL_VERSION && !installedVersion) {
+          versionToInstall = CLEAN_INSTALL_TEST_VERSION;
+          console.log(`TESTING MODE: Clean install detected, forcing version ${versionToInstall} instead of ${latestVersion}`);
+        }
+        
+        await ensureGameInstalled(versionToInstall, branch, progressCallback, customGameDir, customCacheDir, customToolsDir);
         console.log('Game updated successfully, patching will be forced on launch...');
 
         if (progressCallback) {
