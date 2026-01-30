@@ -845,7 +845,7 @@ function getErrorMessage(technicalMessage, errorType) {
     case 'stall':
       return 'Download stalled due to slow connection. Please retry.';
     case 'file':
-      return 'Unable to save file. Check disk space and permissions. Please retry.';
+      return 'Unable to save file. Check permissions. Please retry.';
     case 'permission':
       return 'Permission denied. Check if launcher has write access. Please retry.';
     case 'server':
