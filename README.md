@@ -8,9 +8,9 @@
 </header>
 
 ![GitHub Downloads](https://img.shields.io/github/downloads/amiayweb/Hytale-F2P/total?style=for-the-badge)
-![Version](https://img.shields.io/badge/Version-2.2.0-green?style=for-the-badge)
 ![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-orange?style=for-the-badge)
 ![License](https://img.shields.io/badge/License-Educational-blue?style=for-the-badge)
+![Version](https://img.shields.io/badge/Version-2.2.0-green?style=for-the-badge)
 
 [![GitHub stars](https://img.shields.io/github/stars/amiayweb/Hytale-F2P?style=social)](https://github.com/amiayweb/Hytale-F2P/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/amiayweb/Hytale-F2P?style=social)](https://github.com/amiayweb/Hytale-F2P/network/members)
@@ -36,37 +36,37 @@
 ## 📸 Screenshots
 
 <div align="center">
-  <img src="https://i.imgur.com/xW9do3d.png" alt="Hytale F2P Launcher" width="1000">
+  <img src="https://i.imgur.com/wwuuMUf.png" alt="Hytale F2P Launcher" width="1000">
   <details>
     <summary><b>View Gallery</b></summary>
     <table style="width: 100%; border-spacing: 15px; border-collapse: separate;">
       <tr>
         <td align="center" style="vertical-align: top; width: 50%;">
-          <b>Mods Preview</b><br>
-          <img src="https://i.imgur.com/f8qyIJy.png" alt="Hytale F2P Mods" width="100%">
+          <b>Featured Servers 🆕</b><br>
+          <img src="https://i.imgur.com/fEu9y3Z.png" alt="Hytale F2P Featured Servers" width="100%">
         </td>
         <td align="center" style="vertical-align: top; width: 50%;">
-          <b>Latest News</b><br>
-          <img src="https://i.imgur.com/qu0HltD.png" alt="Hytale F2P News" width="100%">
-        </td>
-      </tr>
-      <tr>
-        <td align="center" style="vertical-align: top; width: 50%;">
-          <b>Social & Chat</b><br>
-          <img src="https://i.imgur.com/t3GmbfF.png" alt="Hytale F2P Chat" width="100%">
-        </td>
-        <td align="center" style="vertical-align: top; width: 50%;">
-          <b>Settings</b><br>
-          <img src="https://i.imgur.com/uUD7lDB.png" alt="Hytale F2P Settings" width="100%">
+          <b>Settings Page ⚙️</b><br>
+          <img src="https://i.imgur.com/l5iBzxc.png" alt="Hytale F2P Settings Page" width="100%">
         </td>
       </tr>
       <tr>
         <td align="center" style="vertical-align: top; width: 50%;">
-          <b>In-Game Screenshot - Spawn Point</b><br>
+          <b>Downloadable Mods from CurseForge 🛠️</b><br>
+          <img src="https://i.imgur.com/QIDbqYn.png" alt="Hytale F2P Mods Download" width="100%">
+        </td>
+        <td align="center" style="vertical-align: top; width: 50%;">
+          <b>My Mods Menu 🔧</b><br>
+          <img src="https://i.imgur.com/rjvwUfq.png" alt="Hytale F2P My Mods Menu" width="100%">
+        </td>
+      </tr>
+      <tr>
+        <td align="center" style="vertical-align: top; width: 50%;">
+          <b>In-Game Screenshot - Spawn Point 🎮</b><br>
           <img src="https://i.imgur.com/X8lNFQ7.png" alt="Hytale F2P In-Game Screenshot-1" width="100%">
         </td>
         <td align="center" style="vertical-align: top; width: 50%;">
-          <b>In-Game Screenshot - Gameplay Terrain</b><br>
+          <b>In-Game Screenshot - Gameplay Terrain 🌳</b><br>
           <img src="https://i.imgur.com/3iRScPa.png" alt="Hytale F2P In-Game Screenshot-2" width="100%">
         </td>
       </tr>
@@ -80,7 +80,7 @@
 🎯 **Core Features**
 - 🔄 **Automatic Updates** - Smart version checking and seamless game updates
 - 💾 **Data Preservation** - Intelligent UserData backup and restoration during updates
-- 🌐 **Cross-Platform** - Full support for Windows, Linux (X11/Wayland), and macOS
+- 🌐 **Cross-Platform** - Full support for Windows x64, Linux x64 (X11/Wayland, SteamDeck), and macOS Silicon
 - ☕ **Java Management** - Automatic Java runtime detection and installation
 - 🎮 **Multiplayer Support** - Automatic multiplayer client installation (Windows, macOS & Linux !)
 
@@ -88,7 +88,6 @@
 - 📁 **Custom Installation** - Choose your own installation directory
 - 🔍 **Smart Detection** - Automatic game and dependency detection
 - 🗂️ **Mod Support** - Built-in mod management system
-- 💬 **Player Chat** - Integrated chat system for community interaction
 - 📰 **News Feed** - Stay updated with the latest Hytale news
 - 🎨 **Modern UI** - Clean, responsive interface with dark theme
 
@@ -314,6 +313,7 @@ See [BUILD.md](docs/BUILD.md) for comprehensive build instructions.
 - 🍎 **Launcher auto-update Improvement for macOS:** Fix auto-install fails on unsigned app. Added option to download the new launcher version on Github website.
 - 🌎 **New Translations**: Added France 🇲🇫, German 🇩🇪, Indonesian 🇮🇩, Russia 🇷🇺, and Swedish 🇸🇪 translations to the launcher.
 - 🔐 **Fixes Tar Vulnerability:** Updates `tar` from version `6.2.1` to `7.5.7` for vulnerability issue.
+- ⚙️ **Improved Settings Pane UI:** Settings are now shown in two columns instead of one. No more doom scrolling just to change your language.
 - ⭐ **Added Features Servers:** Don't know which one to play? Join our Featured Servers!
 - 💬 **Removed Chat Pane and Add Discord Feature:** Useless chat feature, we got Discord. Join it, NOW. Also added Discord RPC features to Github and our Discord Server. SHOW OFF TO YOUR FRIENDS.
 - 🔍 **Investigation on Avatar Not Saving Bug:** We are currently investigating this issue.
