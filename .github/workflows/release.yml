@@ -112,6 +112,11 @@ jobs:
           makepkg -sS --noconfirm
           EOF
 
+      - name: Fix permissions for upload
+        if: always()
+        run: |
+          sudo chown -R $(id -u):$(id -g) .
+
       - name: Upload Arch Package
         uses: actions/upload-artifact@v4
         with:
