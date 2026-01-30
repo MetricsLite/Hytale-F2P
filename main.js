@@ -3,7 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const fs = require('fs');
-const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveChatUsername, loadChatUsername, saveChatColor, loadChatColor, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, saveCloseLauncherOnStart, loadCloseLauncherOnStart, saveLauncherHardwareAcceleration, loadLauncherHardwareAcceleration, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched } = require('./backend/launcher');
+const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, saveCloseLauncherOnStart, loadCloseLauncherOnStart, saveLauncherHardwareAcceleration, loadLauncherHardwareAcceleration, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched, loadConfig, saveConfig } = require('./backend/launcher');
 const { retryPWRDownload } = require('./backend/managers/gameManager');
 const { migrateUserDataToCentralized } = require('./backend/utils/userDataMigration');
 
@@ -599,22 +599,6 @@ ipcMain.handle('save-username', (event, username) => {
 ipcMain.handle('load-username', () => {
   return loadUsername();
 });
-ipcMain.handle('save-chat-username', async (event, chatUsername) => {
-  saveChatUsername(chatUsername);
-});
-
-ipcMain.handle('load-chat-username', async () => {
-  return loadChatUsername();
-});
-
-ipcMain.handle('save-chat-color', (event, color) => {
-  saveChatColor(color);
-  return { success: true };
-});
-
-ipcMain.handle('load-chat-color', () => {
-  return loadChatColor();
-});
 
 ipcMain.handle('save-java-path', (event, javaPath) => {
   saveJavaPath(javaPath);
@@ -670,6 +654,15 @@ ipcMain.handle('save-launcher-hw-accel', (event, enabled) => {
 
 ipcMain.handle('load-launcher-hw-accel', () => {
   return loadLauncherHardwareAcceleration();
+});
+
+ipcMain.handle('load-config', () => {
+  return loadConfig();
+});
+
+ipcMain.handle('save-config', (event, configUpdate) => {
+  saveConfig(configUpdate);
+  return { success: true };
 });
 
 ipcMain.handle('select-install-path', async () => {

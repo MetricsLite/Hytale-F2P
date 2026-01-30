@@ -2,6 +2,15 @@
 const FEATURED_SERVERS_API = 'https://assets.authbp.xyz/featured.json';
 
 /**
+ * Safely escape HTML while preserving UTF-8 characters
+ */
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+/**
  * Load and display featured servers
  */
 async function loadFeaturedServers() {
@@ -16,14 +25,16 @@ async function loadFeaturedServers() {
       cache: 'no-store',
       headers: {
         'Cache-Control': 'no-cache',
-        'Pragma': 'no-cache'
+        'Pragma': 'no-cache',
+        'Accept-Charset': 'utf-8'
       }
     });
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     
-    const data = await response.json();
+    const text = await response.text();
+    const data = JSON.parse(text);
     const featuredServers = data.featuredServers || [];
     
     console.log('[FeaturedServers] Loaded', featuredServers.length, 'featured servers');
@@ -40,8 +51,8 @@ async function loadFeaturedServers() {
       const featuredHTML = featuredServers.map((server, index) => {
         console.log(`[FeaturedServers] Building featured card ${index + 1}:`, server.Name);
         
-        const escapedName = (server.Name || 'Unknown Server').replace(/"/g, '&quot;').replace(/'/g, '&#39;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-        const escapedAddress = (server.Address || '').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+        const escapedName = escapeHtml(server.Name || 'Unknown Server');
+        const escapedAddress = escapeHtml(server.Address || '');
         const bannerUrl = server.img_Banner || 'https://via.placeholder.com/400x240/1e293b/ffffff?text=Server+Banner';
         
         return `

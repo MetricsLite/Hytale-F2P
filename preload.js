@@ -9,10 +9,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getVersion: () => ipcRenderer.invoke('get-version'),
   saveUsername: (username) => ipcRenderer.invoke('save-username', username),
   loadUsername: () => ipcRenderer.invoke('load-username'),
-  saveChatUsername: (chatUsername) => ipcRenderer.invoke('save-chat-username', chatUsername),
-  loadChatUsername: () => ipcRenderer.invoke('load-chat-username'),
-  saveChatColor: (chatColor) => ipcRenderer.invoke('save-chat-color', chatColor),
-  loadChatColor: () => ipcRenderer.invoke('load-chat-color'),
   saveJavaPath: (javaPath) => ipcRenderer.invoke('save-java-path', javaPath),
   loadJavaPath: () => ipcRenderer.invoke('load-java-path'),
   saveInstallPath: (installPath) => ipcRenderer.invoke('save-install-path', installPath),
@@ -23,6 +19,8 @@ contextBridge.exposeInMainWorld('electronAPI', {
   loadLanguage: () => ipcRenderer.invoke('load-language'),
   saveCloseLauncher: (enabled) => ipcRenderer.invoke('save-close-launcher', enabled),
   loadCloseLauncher: () => ipcRenderer.invoke('load-close-launcher'),
+  loadConfig: () => ipcRenderer.invoke('load-config'),
+  saveConfig: (configUpdate) => ipcRenderer.invoke('save-config', configUpdate),
 
   // Hardware Acceleration
   saveLauncherHardwareAcceleration: (enabled) => ipcRenderer.invoke('save-launcher-hw-accel', enabled),

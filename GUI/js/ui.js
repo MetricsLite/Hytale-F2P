@@ -63,8 +63,10 @@ function handleNavigation() {
   navItems.forEach(item => {
     item.addEventListener('click', () => {
       const page = item.getAttribute('data-page');
-      showPage(`${page}-page`);
-      setActiveNav(page);
+      if (page) {
+        showPage(`${page}-page`);
+        setActiveNav(page);
+      }
     });
   });
 }
@@ -1100,7 +1102,10 @@ function getRetryContextMessage() {
   }
 }
 
-// Make toggleMaximize globally available
+window.openDiscordExternal = function() {
+  window.electronAPI?.openExternal('https://discord.gg/hf2pdc');
+};
+
 window.toggleMaximize = toggleMaximize;
 
 document.addEventListener('DOMContentLoaded', setupUI);
