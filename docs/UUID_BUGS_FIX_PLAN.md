@@ -67,8 +67,8 @@ All user scenarios have been analyzed for UUID/username persistence:
 | `GUI/js/launcher.js` | Uses checkLaunchReady API, blocks launch if no username |
 | `GUI/js/settings.js` | UUID modal fixes, switchToUsername function, proper error handling, refreshes UUID list on name change |
 | `GUI/style.css` | Switch button styling, user-select: text for UUID input |
-| `GUI/locales/en.json` | Added translation keys for switch username functionality |
-| `main.js` | Fixed UUID IPC handlers, added checkLaunchReady handler |
+| `GUI/locales/*.json` | Added translation keys for switch username functionality (all 10 locales) |
+| `main.js` | Fixed UUID IPC handlers, added checkLaunchReady handler, enabled Ctrl+V/C/X/A shortcuts |
 | `preload.js` | Exposed checkLaunchReady to renderer |
 
 ---
@@ -370,13 +370,17 @@ const username = getCurrentPlayerName();  // From UI input, not saved!
 
 **Category**: E - UI/UX Issue
 
-**Location**: `GUI/style.css`, `GUI/index.html`
+**Location**: `GUI/style.css`, `main.js`
 
-**Problem**: The body element has `select-none` class (Tailwind) which applies `user-select: none` globally. This prevented copy/paste in the custom UUID input field.
+**Problem**: Two issues prevented copy/paste:
+1. The body element has `select-none` class (Tailwind) which applies `user-select: none` globally
+2. Electron's `setIgnoreMenuShortcuts(true)` was blocking Ctrl+V/C/X/A shortcuts
 
 **Fix Applied**:
 - Added `user-select: text` with all vendor prefixes to `.uuid-input` class
-- Overrides the global selection disable for UUID input fields
+- Removed `setIgnoreMenuShortcuts(true)` from main.js
+- Added early return in `before-input-event` handler to allow Ctrl/Cmd + V/C/X/A shortcuts
+- DevTools shortcuts (Ctrl+Shift+I/J/C, F12) remain blocked
 
 ---
 
@@ -472,4 +476,7 @@ After implementing fixes, verify:
 1. **BUG-010**: Verify migration completeness before marking done (low priority)
 2. **BUG-011**: Add file locking with `proper-lockfile` (low priority - single instance)
 3. Add telemetry for config load failures and UUID regeneration events
-4. Add translation keys to other locale files (de-DE, fr-FR, ru-RU, etc.)
+
+## Completed Additional Tasks
+
+- ✅ Added translation keys to all 10 locale files (de-DE, es-ES, fr-FR, id-ID, pl-PL, pt-BR, ru-RU, sv-SE, tr-TR, en)
