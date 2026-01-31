@@ -60,7 +60,7 @@
   "build": {
     "appId": "com.hytalef2p.launcher",
     "productName": "Hytale F2P Launcher",
-    "artifactName": "${name}_${version}.${ext}",
+    "artifactName": "${name}_${version}_${arch}.${ext}",
     "directories": {
       "output": "dist"
     },
@@ -78,18 +78,9 @@
     },
     "linux": {
       "target": [
-        {
-          "target": "AppImage",
-          "arch": ["x64"]
-        },
-        {
-          "target": "deb",
-          "arch": ["x64"]
-        },
-        {
-          "target": "rpm",
-          "arch": ["x64"]
-        }
+        "AppImage",
+        "deb",
+        "rpm"
       ],
       "icon": "build/icon.png",
       "category": "Game"
@@ -110,7 +101,6 @@
         }
       ],
       "icon": "build/icon.icns",
-      "artifactName": "${name}_${version}_${arch}.${ext}",
       "category": "public.app-category.games"
     },
     "nsis": {
