@@ -9,6 +9,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
   getVersion: () => ipcRenderer.invoke('get-version'),
   saveUsername: (username) => ipcRenderer.invoke('save-username', username),
   loadUsername: () => ipcRenderer.invoke('load-username'),
+  checkLaunchReady: () => ipcRenderer.invoke('check-launch-ready'),
   saveJavaPath: (javaPath) => ipcRenderer.invoke('save-java-path', javaPath),
   loadJavaPath: () => ipcRenderer.invoke('load-java-path'),
   saveInstallPath: (installPath) => ipcRenderer.invoke('save-install-path', installPath),

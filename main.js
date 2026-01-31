@@ -3,7 +3,7 @@ require('dotenv').config({ path: path.join(__dirname, '.env') });
 const { app, BrowserWindow, ipcMain, dialog, shell } = require('electron');
 const { autoUpdater } = require('electron-updater');
 const fs = require('fs');
-const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, saveCloseLauncherOnStart, loadCloseLauncherOnStart, saveLauncherHardwareAcceleration, loadLauncherHardwareAcceleration, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched, loadConfig, saveConfig } = require('./backend/launcher');
+const { launchGame, launchGameWithVersionCheck, installGame, saveUsername, loadUsername, saveJavaPath, loadJavaPath, saveInstallPath, loadInstallPath, saveDiscordRPC, loadDiscordRPC, saveLanguage, loadLanguage, saveCloseLauncherOnStart, loadCloseLauncherOnStart, saveLauncherHardwareAcceleration, loadLauncherHardwareAcceleration, isGameInstalled, uninstallGame, repairGame, getHytaleNews, handleFirstLaunchCheck, proposeGameUpdate, markAsLaunched, loadConfig, saveConfig, checkLaunchReady } = require('./backend/launcher');
 const { retryPWRDownload } = require('./backend/managers/gameManager');
 const { migrateUserDataToCentralized } = require('./backend/utils/userDataMigration');
 
@@ -257,6 +257,17 @@ function createWindow() {
   });
 
   mainWindow.webContents.on('before-input-event', (event, input) => {
+    // Allow standard copy/paste/cut/select-all shortcuts
+    const isMac = process.platform === 'darwin';
+    const modKey = isMac ? input.meta : input.control;
+    const key = input.key.toLowerCase();
+
+    // Allow Ctrl/Cmd + V (paste), C (copy), X (cut), A (select all)
+    if (modKey && !input.shift && ['v', 'c', 'x', 'a'].includes(key)) {
+      return; // Don't block these
+    }
+
+    // Block devtools shortcuts
     if (input.control && input.shift && input.key.toLowerCase() === 'i') {
       event.preventDefault();
     }
@@ -274,7 +285,6 @@ function createWindow() {
     }
 
     // Close application shortcuts
-    const isMac = process.platform === 'darwin';
     const quitShortcut = (isMac && input.meta && input.key.toLowerCase() === 'q') ||
       (!isMac && input.control && input.key.toLowerCase() === 'q') ||
       (!isMac && input.alt && input.key === 'F4');
@@ -290,7 +300,7 @@ function createWindow() {
     e.preventDefault();
   });
 
-  mainWindow.webContents.setIgnoreMenuShortcuts(true);
+  // Note: Not using setIgnoreMenuShortcuts to allow copy/paste to work
 }
 
 app.whenReady().then(async () => {
@@ -596,12 +606,24 @@ ipcMain.handle('install-game', async (event, playerName, javaPath, installPath, 
 });
 
 ipcMain.handle('save-username', (event, username) => {
-  saveUsername(username);
-  return { success: true };
+  try {
+    saveUsername(username);
+    return { success: true };
+  } catch (error) {
+    console.error('[Main] Failed to save username:', error.message);
+    return { success: false, error: error.message };
+  }
 });
 
 ipcMain.handle('load-username', () => {
+  // Returns null if no username configured (no silent 'Player' fallback)
   return loadUsername();
+});
+
+ipcMain.handle('check-launch-ready', () => {
+  // Returns launch readiness state with detailed info
+  // { ready: boolean, hasUsername: boolean, username: string|null, issues: string[] }
+  return checkLaunchReady();
 });
 
 ipcMain.handle('save-java-path', (event, javaPath) => {
@@ -1235,12 +1257,9 @@ ipcMain.handle('get-current-uuid', async () => {
 
 ipcMain.handle('get-all-uuid-mappings', async () => {
   try {
-    const mappings = getAllUuidMappings();
-    return Object.entries(mappings).map(([username, uuid]) => ({
-      username,
-      uuid,
-      isCurrent: username === require('./backend/launcher').loadUsername()
-    }));
+    // Use getAllUuidMappingsArray which correctly normalizes username for comparison
+    const { getAllUuidMappingsArray } = require('./backend/launcher');
+    return getAllUuidMappingsArray();
   } catch (error) {
     console.error('Error getting UUID mappings:', error);
     return [];
