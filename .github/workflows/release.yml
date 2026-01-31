@@ -64,7 +64,7 @@ jobs:
 
       - name: Build Linux Packages
         run: |
-          npx electron-builder --linux AppImage deb rpm --x64 --arm64 --publish never
+          npx electron-builder --linux AppImage deb rpm --publish never
       - uses: actions/upload-artifact@v4
         with:
           name: linux-builds
@@ -112,13 +112,17 @@ jobs:
           makepkg -sS --noconfirm
           EOF
 
+      - name: Fix permissions for upload
+        if: always()
+        run: |
+          sudo chown -R $(id -u):$(id -g) .
+
       - name: Upload Arch Package
         uses: actions/upload-artifact@v4
         with:
           name: arch-package
           path: |
             *.pkg.tar.zst
-            *.src.tar.zst
             .SRCINFO
           include-hidden-files: true
 
