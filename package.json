@@ -26,6 +26,7 @@
     "electron",
     "auto-update",
     "mod-manager"
+    
   ],
   "maintainers": [
     {
@@ -55,7 +56,8 @@
     "electron-updater": "^6.7.3",
     "fs-extra": "^11.3.3",
     "tar": "^7.5.7",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "encoding": "^0.1.13"
   },
   "build": {
     "appId": "com.hytalef2p.launcher",
