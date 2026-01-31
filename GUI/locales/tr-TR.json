@@ -211,7 +211,11 @@
     "modsDeleteFailed": "Mod silinemedi: {error}",
     "modsModNotFound": "Mod bilgileri bulunamadı",
     "hwAccelSaved": "Donanım hızlandırma ayarı kaydedildi",
-    "hwAccelSaveFailed": "Donanım hızlandırma ayarı kaydedilemedi"
+    "hwAccelSaveFailed": "Donanım hızlandırma ayarı kaydedilemedi",
+    "noUsername": "Kullanıcı adı yapılandırılmadı. Lütfen önce kullanıcı adınızı kaydedin.",
+    "switchUsernameSuccess": "\"{username}\" adına başarıyla geçildi!",
+    "switchUsernameFailed": "Kullanıcı adı değiştirilemedi",
+    "playerNameTooLong": "Oyuncu adı 16 karakter veya daha az olmalıdır"
   },
   "confirm": {
     "defaultTitle": "Eylemi onayla",
@@ -226,7 +230,10 @@
     "deleteUuidButton": "Sil",
     "uninstallGameTitle": "Oyunu kaldır",
     "uninstallGameMessage": "Hytale'yi kaldırmak istediğinizden emin misiniz? Tüm oyun dosyaları silinecektir.",
-    "uninstallGameButton": "Kaldır"
+    "uninstallGameButton": "Kaldır",
+    "switchUsernameTitle": "Kimlik Değiştir",
+    "switchUsernameMessage": "\"{username}\" kullanıcı adına geçilsin mi? Bu mevcut oyuncu kimliğinizi değiştirecektir.",
+    "switchUsernameButton": "Değiştir"
   },
   "progress": {
     "initializing": "Başlatılıyor...",

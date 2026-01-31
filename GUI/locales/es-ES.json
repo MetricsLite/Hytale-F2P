@@ -211,7 +211,11 @@
     "modsDeleteFailed": "Error al eliminar mod: {error}",
     "modsModNotFound": "Información del mod no encontrada",
     "hwAccelSaved": "Configuración de aceleración por hardware guardada",
-    "hwAccelSaveFailed": "Error al guardar la configuración de aceleración por hardware"
+    "hwAccelSaveFailed": "Error al guardar la configuración de aceleración por hardware",
+    "noUsername": "No hay nombre de usuario configurado. Por favor, guarda tu nombre de usuario primero.",
+    "switchUsernameSuccess": "¡Cambiado a \"{username}\" con éxito!",
+    "switchUsernameFailed": "Error al cambiar nombre de usuario",
+    "playerNameTooLong": "El nombre del jugador debe tener 16 caracteres o menos"
   },
   "confirm": {
     "defaultTitle": "Confirmar acción",
@@ -226,7 +230,10 @@
     "deleteUuidButton": "Eliminar",
     "uninstallGameTitle": "Desinstalar juego",
     "uninstallGameMessage": "¿Estás seguro de que quieres desinstalar Hytale? Se eliminarán todos los archivos del juego.",
-    "uninstallGameButton": "Desinstalar"
+    "uninstallGameButton": "Desinstalar",
+    "switchUsernameTitle": "Cambiar identidad",
+    "switchUsernameMessage": "¿Cambiar al nombre de usuario \"{username}\"? Esto cambiará tu identidad de jugador actual.",
+    "switchUsernameButton": "Cambiar"
   },
   "progress": {
     "initializing": "Inicializando...",

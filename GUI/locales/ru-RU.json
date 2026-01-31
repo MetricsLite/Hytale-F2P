@@ -211,7 +211,11 @@
     "modsDeleteFailed": "Не получилось удалить мод: {error}",
     "modsModNotFound": "Информация по моду не найдена",
     "hwAccelSaved": "Настройка аппаратного ускорения сохранена!",
-    "hwAccelSaveFailed": "Не удалось сохранить настройку аппаратного ускорения"
+    "hwAccelSaveFailed": "Не удалось сохранить настройку аппаратного ускорения",
+    "noUsername": "Имя пользователя не настроено. Пожалуйста, сначала сохраните имя пользователя.",
+    "switchUsernameSuccess": "Успешно переключено на \"{username}\"!",
+    "switchUsernameFailed": "Не удалось переключить имя пользователя",
+    "playerNameTooLong": "Имя игрока должно быть не более 16 символов"
   },
   "confirm": {
     "defaultTitle": "Подтвердить действие",
@@ -226,7 +230,10 @@
     "deleteUuidButton": "Удалить",
     "uninstallGameTitle": "Удалить игру",
     "uninstallGameMessage": "Вы уверены, что хотите удалить Hytale? Все данные игры будут безвозвратно удалены!",
-    "uninstallGameButton": "Удалить"
+    "uninstallGameButton": "Удалить",
+    "switchUsernameTitle": "Сменить личность",
+    "switchUsernameMessage": "Переключиться на имя пользователя \"{username}\"? Это изменит вашу текущую личность игрока.",
+    "switchUsernameButton": "Переключить"
   },
   "progress": {
     "initializing": "Инициализация...",
