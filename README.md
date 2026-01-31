@@ -167,17 +167,17 @@
 ### 🪟 Windows Prequisites
 * **Java JDK 25:**
   * [Oracle](https://www.oracle.com/java/technologies/downloads/#jdk25-windows)
-  * [Adoptium](https://adoptium.net/temurin/releases/?version=25)
-  * [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download), has Windows ARM64 support in version 25.
+  * or [Alt 1: Adoptium](https://adoptium.net/temurin/releases/?version=25)
+  * or [Alt 2: Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download), has Windows ARM64 support in version 25.
 * **Latest Visual Studio Redist:** 
-  * Download via [Microsoft Visual C++ Redistributable](https://aka.ms/vc14/vc_redist.x64.exe)
-  * Or [All-in-One by Techpowerup](https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/)
+  * Download via [All-in-One by Techpowerup](https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/) 
+  * Or [Microsoft Visual C++ Redistributable](https://aka.ms/vc14/vc_redist.x64.exe)
 
 ### 🐧 Linux Prequisites
 
 * Make sure you have already installed newest **GPU driver** especially proprietary NVIDIA, consult your distro docs or wiki.
   * Also make sure that your GPU can be connected to EGL, try checking it first (again, consult your distro docs or wiki) before installing Hytale game via our launcher.
-* Install `libpng` package to avoid `SDL3_Image` error:
+* [Not needed in update v2.2.0] Install `libpng` package to avoid `SDL3_Image` error:
   * `libpng16-16 libpng-dev` for Ubuntu/Debian-based Distro
   * `libpng libpng-devel` for Fedora/RHEL-based Distro
   * `libpng` for Arch-based Distro
@@ -273,7 +273,7 @@ The `.zip` version is useful for users who prefer a portable installation or nee
 1. Open your Singleplayer World
 2. Pause the game (Esc) > select Online Play > Turn on `Allow Other Players to Join` > Set password if needed > Press `Save`.
 3. Check the status `Connected via UPnP`.
-4. If your friends can't connect to your hosted Online-Play feature, please follow **Local Dedicated Server** tutorial.
+4. If your friends can't connect to your hosted Online-Play feature, please follow **Local Dedicated Server** tutorial in [SERVER.md](SERVER.md#b-local-dedicated-server).
 
 ## 🖧 Host a Dedicated Server
 
@@ -284,7 +284,7 @@ The `.zip` version is useful for users who prefer a portable installation or nee
 > Use services like Playit.gg, Tailscale, Radmin VPN to share UDP connection if setting up router as an admin is not possible.
 
 > [!WARNING]
-> `Hytale-F2P-Server.rar` file is needed to set up a server on non-playing hardware (such as VPS/server hosting). Additional: **Linux ARM64** is supported for server only, not client.
+> `HytaleServer.rar` file is needed to set up a server on non-playing hardware (such as VPS/server hosting). Additional: **Linux ARM64** is supported for server only, not client.
 
 > [!IMPORTANT]
 > See detailed information of setting up a server here: [SERVER.md](SERVER.md). Download the latest patched JAR, the patched RAR, or the SH/BAT scripts from channel `#open-public-server` in our Discord Server. 
