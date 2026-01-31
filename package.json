@@ -60,7 +60,7 @@
   "build": {
     "appId": "com.hytalef2p.launcher",
     "productName": "Hytale F2P Launcher",
-    "artifactName": "${name}_${version}_${arch}.${ext}",
+    "artifactName": "${name}_${version}.${ext}",
     "directories": {
       "output": "dist"
     },
@@ -101,6 +101,7 @@
         }
       ],
       "icon": "build/icon.icns",
+      "artifactName": "${name}_${version}_${arch}.${ext}",
       "category": "public.app-category.games"
     },
     "nsis": {
