@@ -5236,6 +5236,21 @@ select.settings-input option {
     font-family: 'JetBrains Mono', monospace;
     font-size: 0.875rem;
     letter-spacing: 0.5px;
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+    pointer-events: auto !important;
+}
+
+/* Ensure all input fields allow text selection and paste */
+input[type="text"].uuid-input,
+#customUuidInput {
+    -webkit-user-select: text !important;
+    -moz-user-select: text !important;
+    -ms-user-select: text !important;
+    user-select: text !important;
+    pointer-events: auto !important;
 }
 
 .uuid-btn {
@@ -5621,6 +5636,12 @@ select.settings-input option {
     background: rgba(239, 68, 68, 0.2);
     border-color: rgba(239, 68, 68, 0.4);
     color: #ef4444;
+}
+
+.uuid-item-btn.switch:hover {
+    background: rgba(59, 130, 246, 0.2);
+    border-color: rgba(59, 130, 246, 0.4);
+    color: #3b82f6;
 }
 
 @media (max-width: 600px) {

@@ -472,7 +472,9 @@ async function installGame(playerName = 'Player', progressCallback, javaPathOver
     }
   });
 
-  saveUsername(playerName);
+  // NOTE: Do NOT save username here - username should only be saved when user explicitly
+  // changes it in Settings. Saving here could overwrite a good username with 'Player' default.
+  // The username is only needed for launching, not for installing.
   if (installPathOverride) {
     saveInstallPath(installPathOverride);
   }

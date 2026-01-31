@@ -7,7 +7,19 @@ const { spawn } = require('child_process');
 const { v4: uuidv4 } = require('uuid');
 const { getResolvedAppDir, findClientPath } = require('../core/paths');
 const { setupWaylandEnvironment, setupGpuEnvironment } = require('../utils/platformUtils');
-const { saveUsername, saveInstallPath, loadJavaPath, getUuidForUser, getAuthServerUrl, getAuthDomain, loadVersionBranch, loadVersionClient, saveVersionClient } = require('../core/config');
+const {
+  saveInstallPath,
+  loadJavaPath,
+  getUuidForUser,
+  getAuthServerUrl,
+  getAuthDomain,
+  loadVersionBranch,
+  loadVersionClient,
+  saveVersionClient,
+  loadUsername,
+  hasUsername,
+  checkLaunchReady
+} = require('../core/config');
 const { resolveJavaPath, getJavaExec, getBundledJavaPath, detectSystemJava, JAVA_EXECUTABLE } = require('./javaManager');
 const { getLatestClientVersion } = require('../services/versionManager');
 const { FORCE_CLEAN_INSTALL_VERSION, CLEAN_INSTALL_TEST_VERSION } = require('../core/testConfig');
@@ -104,8 +116,42 @@ function generateLocalTokens(uuid, name) {
   };
 }
 
-async function launchGame(playerName = 'Player', progressCallback, javaPathOverride, installPathOverride, gpuPreference = 'auto', branchOverride = null) {
-  // Synchronize server list on every game launch
+async function launchGame(playerNameOverride = null, progressCallback, javaPathOverride, installPathOverride, gpuPreference = 'auto', branchOverride = null) {
+  // ==========================================================================
+  // STEP 1: Validate player identity FIRST (before any other operations)
+  // ==========================================================================
+  const launchState = checkLaunchReady();
+
+  // Load username from config - single source of truth
+  let playerName = loadUsername();
+
+  if (!playerName) {
+    // No username configured - this is a critical error
+    const error = new Error('No username configured. Please set your username in Settings before playing.');
+    console.error('[Launcher] Launch blocked:', error.message);
+    throw error;
+  }
+
+  // Allow override only if explicitly provided (for testing/migration)
+  if (playerNameOverride && typeof playerNameOverride === 'string' && playerNameOverride.trim()) {
+    const overrideName = playerNameOverride.trim();
+    if (overrideName !== playerName && overrideName !== 'Player') {
+      console.warn(`[Launcher] Username override requested: "${overrideName}" (saved: "${playerName}")`);
+      // Use override for this session but DON'T save it - config is source of truth
+      playerName = overrideName;
+    }
+  }
+
+  // Warn if using default 'Player' name (likely misconfiguration)
+  if (playerName === 'Player') {
+    console.warn('[Launcher] Warning: Using default username "Player". This may cause cosmetic issues.');
+  }
+
+  console.log(`[Launcher] Launching game for player: "${playerName}"`);
+
+  // ==========================================================================
+  // STEP 2: Synchronize server list
+  // ==========================================================================
   try {
     console.log('[Launcher] Synchronizing server list...');
     await syncServerList();
@@ -113,11 +159,14 @@ async function launchGame(playerName = 'Player', progressCallback, javaPathOverr
     console.warn('[Launcher] Server list sync failed, continuing launch:', syncError.message);
   }
 
+  // ==========================================================================
+  // STEP 3: Setup paths and directories
+  // ==========================================================================
   const branch = branchOverride || loadVersionBranch();
   const customAppDir = getResolvedAppDir(installPathOverride);
   const customGameDir = path.join(customAppDir, branch, 'package', 'game', 'latest');
   const customJreDir = path.join(customAppDir, branch, 'package', 'jre', 'latest');
-  
+
   // NEW 2.2.0: Use centralized UserData location
   const userDataDir = getUserDataPath();
 
@@ -128,7 +177,10 @@ async function launchGame(playerName = 'Player', progressCallback, javaPathOverr
     throw new Error('Game is not installed. Please install the game first.');
   }
 
-  saveUsername(playerName);
+  // NOTE: We do NOT save username here anymore - username is only saved
+  // when user explicitly changes it in Settings. This prevents accidental
+  // overwrites from race conditions or default values.
+
   if (installPathOverride) {
     saveInstallPath(installPathOverride);
   }
@@ -417,10 +469,26 @@ exec "$REAL_JAVA" "\${ARGS[@]}"
   }
 }
 
-async function launchGameWithVersionCheck(playerName = 'Player', progressCallback, javaPathOverride, installPathOverride, gpuPreference = 'auto', branchOverride = null) {
+async function launchGameWithVersionCheck(playerNameOverride = null, progressCallback, javaPathOverride, installPathOverride, gpuPreference = 'auto', branchOverride = null) {
   try {
+    // ==========================================================================
+    // PRE-LAUNCH VALIDATION: Check username is configured
+    // ==========================================================================
+    const launchState = checkLaunchReady();
+
+    if (!launchState.hasUsername) {
+      const error = 'No username configured. Please set your username in Settings before playing.';
+      console.error('[Launcher] Launch blocked:', error);
+      if (progressCallback) {
+        progressCallback(error, -1, null, null, null);
+      }
+      return { success: false, error: error, needsUsername: true };
+    }
+
+    console.log(`[Launcher] Pre-launch check passed. Username: "${launchState.username}"`);
+
     const branch = branchOverride || loadVersionBranch();
-    
+
     if (progressCallback) {
       progressCallback('Checking for updates...', 0, null, null, null);
     }
@@ -474,7 +542,7 @@ async function launchGameWithVersionCheck(playerName = 'Player', progressCallbac
       progressCallback('Launching game...', 80, null, null, null);
     }
 
-    const launchResult = await launchGame(playerName, progressCallback, javaPathOverride, installPathOverride, gpuPreference, branch);
+    const launchResult = await launchGame(playerNameOverride, progressCallback, javaPathOverride, installPathOverride, gpuPreference, branch);
     
     // Ensure we always return a result
     if (!launchResult) {

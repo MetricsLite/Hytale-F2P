@@ -5,6 +5,8 @@
 const {
   saveUsername,
   loadUsername,
+  loadUsernameWithDefault,
+  hasUsername,
   saveJavaPath,
   loadJavaPath,
   saveInstallPath,
@@ -27,9 +29,11 @@ const {
   getUuidForUser,
   isFirstLaunch,
   markAsLaunched,
+  checkLaunchReady,
   // UUID Management
   getCurrentUuid,
   getAllUuidMappings,
+  getAllUuidMappingsArray,
   setUuidForUser,
   generateNewUuid,
   deleteUuidForUser,
@@ -110,7 +114,10 @@ module.exports = {
   // User configuration functions
   saveUsername,
   loadUsername,
+  loadUsernameWithDefault,
+  hasUsername,
   getUuidForUser,
+  checkLaunchReady,
 
   // Java configuration functions
   saveJavaPath,
@@ -162,6 +169,7 @@ module.exports = {
   // UUID Management functions
   getCurrentUuid,
   getAllUuidMappings,
+  getAllUuidMappingsArray,
   setUuidForUser,
   generateNewUuid,
   deleteUuidForUser,
