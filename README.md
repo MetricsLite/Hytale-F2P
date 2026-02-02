@@ -7,19 +7,18 @@
   <p><small>An unofficial cross-platform launcher for Hytale with automatic updates and multiplayer support!</small></p>
 </header>
 
-![GitHub Downloads](https://img.shields.io/github/downloads/amiayweb/Hytale-F2P/total?style=for-the-badge)
-![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-orange?style=for-the-badge)
-![License](https://img.shields.io/badge/License-Educational-blue?style=for-the-badge)
-![Version](https://img.shields.io/badge/Version-2.2.0-green?style=for-the-badge)
+[![GitHub Downloads](https://img.shields.io/github/downloads/amiayweb/Hytale-F2P/total?style=for-the-badge)](https://github.com/amiayweb/Hytale-F2P/releases)
+[![Version](https://img.shields.io/badge/Version-2.2.1-red?style=for-the-badge)](https://github.com/amiayweb/Hytale-F2P/releases)
+[![Platform](https://img.shields.io/badge/Platform-Windows%20%7C%20macOS%20%7C%20Linux-teal?style=for-the-badge)](https://github.com/amiayweb/Hytale-F2P/releases)
 
-[![GitHub stars](https://img.shields.io/github/stars/amiayweb/Hytale-F2P?style=social)](https://github.com/amiayweb/Hytale-F2P/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/amiayweb/Hytale-F2P?style=social)](https://github.com/amiayweb/Hytale-F2P/network/members)
+[![GitHub stars](https://img.shields.io/github/stars/amiayweb/Hytale-F2P?style=for-the-badge&logo=github)](https://github.com/amiayweb/Hytale-F2P/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/amiayweb/Hytale-F2P?style=for-the-badge&logo=github)](https://github.com/amiayweb/Hytale-F2P/network/members)
+[![GitHub issues](https://img.shields.io/github/issues/amiayweb/Hytale-F2P?style=for-the-badge&logo=github)](https://github.com/amiayweb/Hytale-F2P/issues)
+![License](https://img.shields.io/badge/License-Educational-purple?style=for-the-badge)
 
-⭐ **If you find this project useful, please give it a STAR!** ⭐
+### ⚠️ **WARNING: READ [QUICK START](#-quick-start) before Downloading & Installing the Launcher!** ⚠️
 
-### ⚠️ **READ [QUICK START](README.md#-quick-start) before Downloading & Installing the Launcher!** ⚠️
-
-#### 🛑 **Found a problem? Join the Discord and Select #Open-A-Ticket!: https://discord.gg/gME8rUy3MB** 🛑
+#### 🛑 **Found a problem? [Join the HF2P Discord](https://discord.gg/hf2pdc) and head to `#-⚠️-community-help`** 🛑
 
 <p>
   👍 If you like the project, <b>feel free to support us via Buy Me a Coffee!</b> ☕<br>
@@ -30,9 +29,15 @@
   <img src="https://media3.giphy.com/media/v1.Y2lkPTc5MGI3NjExem14OW1tanN3eHlyYmR4NW1sYmJkOTZmbmJxejdjZXB6MXY5cW12MSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/TDQOtnWgsBx99cNoyH/giphy.gif" width="120">
 </a>
 
+
+⭐ **If you find this project useful, please give it a STAR!** ⭐
+
+[![Star History Chart](https://api.star-history.com/svg?repos=amiayweb/Hytale-F2P&type=date&legend=top-left)](https://www.star-history.com/#amiayweb/Hytale-F2P&type=date&legend=top-left)
+
 </div>
 
 ---
+
 ## 📸 Screenshots
 
 <div align="center">
@@ -167,17 +172,17 @@
 ### 🪟 Windows Prequisites
 * **Java JDK 25:**
   * [Oracle](https://www.oracle.com/java/technologies/downloads/#jdk25-windows)
-  * [Adoptium](https://adoptium.net/temurin/releases/?version=25)
-  * [Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download), has Windows ARM64 support in version 25.
+  * or [Alt 1: Adoptium](https://adoptium.net/temurin/releases/?version=25)
+  * or [Alt 2: Microsoft](https://learn.microsoft.com/en-us/java/openjdk/download).
 * **Latest Visual Studio Redist:** 
-  * Download via [Microsoft Visual C++ Redistributable](https://aka.ms/vc14/vc_redist.x64.exe)
-  * Or [All-in-One by Techpowerup](https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/)
+  * Download via [All-in-One by Techpowerup](https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/) 
+  * Or [Microsoft Visual C++ Redistributable](https://aka.ms/vc14/vc_redist.x64.exe)
 
 ### 🐧 Linux Prequisites
 
 * Make sure you have already installed newest **GPU driver** especially proprietary NVIDIA, consult your distro docs or wiki.
   * Also make sure that your GPU can be connected to EGL, try checking it first (again, consult your distro docs or wiki) before installing Hytale game via our launcher.
-* Install `libpng` package to avoid `SDL3_Image` error:
+* [Not needed in update v2.2.0+] Install `libpng` package to avoid `SDL3_Image` error:
   * `libpng16-16 libpng-dev` for Ubuntu/Debian-based Distro
   * `libpng libpng-devel` for Fedora/RHEL-based Distro
   * `libpng` for Arch-based Distro
@@ -272,8 +277,8 @@ The `.zip` version is useful for users who prefer a portable installation or nee
 
 1. Open your Singleplayer World
 2. Pause the game (Esc) > select Online Play > Turn on `Allow Other Players to Join` > Set password if needed > Press `Save`.
-3. Check the status `Connected via UPnP`.
-4. If your friends can't connect to your hosted Online-Play feature, please follow **Local Dedicated Server** tutorial.
+3. Check the status `Connected via UPnP`, it means you can use the Invite Codes for your friends.
+4. If your friends can't connect to your hosted Online-Play feature OR if it's showing `"Restricted (no UPnP)`, please follow the Tailscale/Playit.gg/Radmin tutorial in [SERVER.md](SERVER.md).
 
 ## 🖧 Host a Dedicated Server
 
@@ -284,10 +289,10 @@ The `.zip` version is useful for users who prefer a portable installation or nee
 > Use services like Playit.gg, Tailscale, Radmin VPN to share UDP connection if setting up router as an admin is not possible.
 
 > [!WARNING]
-> `Hytale-F2P-Server.rar` file is needed to set up a server on non-playing hardware (such as VPS/server hosting). Additional: **Linux ARM64** is supported for server only, not client.
+> `HytaleServer.rar` file is needed to set up a server on non-playing hardware (such as VPS/server hosting). Additional: **Linux ARM64** is supported for server only, not client.
 
 > [!IMPORTANT]
-> See detailed information of setting up a server here: [SERVER.md](SERVER.md). Download the latest patched JAR, the patched RAR, or the SH/BAT scripts from channel `#open-public-server` in our Discord Server. 
+> See detailed information of setting up a server here: [SERVER.md](SERVER.md).
 
 ---
 
@@ -305,7 +310,17 @@ See [BUILD.md](docs/BUILD.md) for comprehensive build instructions.
 
 ## 📋 Changelog
 
-### 🆕 v2.2.0
+### 🆕 v2.2.1
+- 👚 **Avatar Not Saving Bug Fix:** FINALLY, the long-awaited avatar saves is now working! 🙌 Show off your avatar skin in our Discord `#-media` text channel! 👀
+- 🚀 **HytaleClient Fails to Launch and Persists in Task Manager Bug Fix:** Major bug fix for all affected Windows users! No more ghost processes of `HytaleClient.exe` in Task Manager! And no more launch fail, that's hella one of an achievement 🔥 (If problem persists please create issue on Github 😢)
+- 🚦 **EPERM Bug Fix in 'Repair Game' Button:** Repair game will not produce Error Permission (EPERM) any more.
+- 🚨 **'Server Failed to Boot' Bug Fix:** Happy news for internet-limited countries (e.g. 🇷🇺 Russia, 🇹🇷 Turkey, 🇧🇷 Brazil, etc.)! The launcher now using proxy to access our patched JAR & check game version release status!🎉 Make sure you're already allow the `HytaleClient.exe` on Public & Private Windows Firewall 😉!
+- ⚡ **GPU Detection System Enhancements:** The detection system will now detect your GPU with `CimInstance` instead of `WmicObject`, which deprecated for most Windows 11 updates. Also, it's show how much your VRAM on each iGPU and dGPU! 🔍
+- ⚠️ **Failed to Deserialize Packets Bug Fix:** Shared `libzstd` library didn't get detected in Fedora/Bazzite/RHEL-based Linux Distros due to incorrect checking library order. 📑
+- 📟 **UUID Persistence Bug Fix:** Correlates to the avatar not saving bug, this fixes the persistence UUID when changing username. 🔖
+- 🌐 **Turkish Translation Fix:** 🇹🇷 Turkey players should feel at home now. 🏠
+
+### 🔄 v2.2.0
 - 🔃 **Game Patches Auto-Update Improvement:** No need to install 1.5GB for every updates! Game updates now reduced to almost **~90%** (Hytale Game Update 3 to 4 only take ~150MB).
 - 🩹 **Improved Patch System Pre-Release JAR:** In previous version, only Release JAR could be patched. Now it also can be used for Pre-Release JAR!
 - 🔗 **Fix Mods Manager Issue:** Mods now can be downloaded seamlessly from the launcher, use Profiles to install your preferred mod. It will also automatically copy from selected `Profile/<profilename>` to the `Mods` folder.
@@ -435,23 +450,12 @@ See [BUILD.md](docs/BUILD.md) for comprehensive build instructions.
 
 ---
 
-## 📊 GitHub Stats
+## 📞 Contact Information
 
 <div align="center">
 
-![GitHub stars](https://img.shields.io/github/stars/amiayweb/Hytale-F2P?style=for-the-badge&logo=github)
-![GitHub forks](https://img.shields.io/github/forks/amiayweb/Hytale-F2P?style=for-the-badge&logo=github)
-![GitHub issues](https://img.shields.io/github/issues/amiayweb/Hytale-F2P?style=for-the-badge&logo=github)
-![GitHub downloads](https://img.shields.io/github/downloads/amiayweb/Hytale-F2P/total?style=for-the-badge&logo=github)
-
-</div>
-
-
-## 📞 Support
-
-<div align="center">
-
-**Need help?** Join us: https://discord.gg/gME8rUy3MB
+**Questions? Ads? Collaboration? Endorsement? Other business-related?** 
+Message the founders at https://discord.gg/hf2pdc
 
 </div>
 

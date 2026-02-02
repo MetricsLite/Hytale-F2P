@@ -211,7 +211,11 @@
     "modsDeleteFailed": "Gagal menghapus mod: {error}",
     "modsModNotFound": "Informasi mod tidak ditemukan",
     "hwAccelSaved": "Pengaturan akselerasi perangkat keras disimpan",
-    "hwAccelSaveFailed": "Gagal menyimpan pengaturan akselerasi perangkat keras"
+    "hwAccelSaveFailed": "Gagal menyimpan pengaturan akselerasi perangkat keras",
+    "noUsername": "Nama pengguna belum dikonfigurasi. Silakan simpan nama pengguna terlebih dahulu.",
+    "switchUsernameSuccess": "Berhasil beralih ke \"{username}\"!",
+    "switchUsernameFailed": "Gagal beralih nama pengguna",
+    "playerNameTooLong": "Nama pemain harus 16 karakter atau kurang"
   },
   "confirm": {
     "defaultTitle": "Konfirmasi tindakan",
@@ -226,7 +230,10 @@
     "deleteUuidButton": "Hapus",
     "uninstallGameTitle": "Hapus instalasi game",
     "uninstallGameMessage": "Apakah kamu yakin ingin menghapus instalasi Hytale? Semua file game akan dihapus.",
-    "uninstallGameButton": "Hapus Instalasi"
+    "uninstallGameButton": "Hapus Instalasi",
+    "switchUsernameTitle": "Ganti Identitas",
+    "switchUsernameMessage": "Beralih ke nama pengguna \"{username}\"? Ini akan mengubah identitas pemain saat ini.",
+    "switchUsernameButton": "Ganti"
   },
   "progress": {
     "initializing": "Menginisialisasi...",

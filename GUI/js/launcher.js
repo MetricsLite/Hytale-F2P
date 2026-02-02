@@ -194,27 +194,81 @@ window.switchProfile = async (id) => {
 export async function launch() {
   if (isDownloading || (playBtn && playBtn.disabled)) return;
 
-  let playerName = 'Player';
-  if (window.SettingsAPI && window.SettingsAPI.getCurrentPlayerName) {
-    playerName = window.SettingsAPI.getCurrentPlayerName();
-  } else if (playerNameInput && playerNameInput.value.trim()) {
-    playerName = playerNameInput.value.trim();
+  // ==========================================================================
+  // STEP 1: Check launch readiness from backend (single source of truth)
+  // ==========================================================================
+  let launchState = null;
+  let playerName = null;
+
+  try {
+    if (window.electronAPI && window.electronAPI.checkLaunchReady) {
+      launchState = await window.electronAPI.checkLaunchReady();
+      playerName = launchState?.username;
+    } else if (window.electronAPI && window.electronAPI.loadUsername) {
+      // Fallback to loadUsername if checkLaunchReady not available
+      playerName = await window.electronAPI.loadUsername();
+      launchState = { ready: !!playerName, hasUsername: !!playerName, username: playerName, issues: [] };
+    }
+  } catch (error) {
+    console.error('[Launcher] Error checking launch readiness:', error);
   }
 
-  let javaPath = '';
-  if (window.SettingsAPI && window.SettingsAPI.getCurrentJavaPath) {
-    javaPath = window.SettingsAPI.getCurrentJavaPath();
+  // Validate launch readiness
+  if (!launchState?.ready || !playerName) {
+    const issues = launchState?.issues || ['No username configured'];
+    const errorMsg = window.i18n
+      ? window.i18n.t('errors.noUsername')
+      : 'Please set your username in Settings before playing.';
+
+    console.error('[Launcher] Launch blocked:', issues.join(', '));
+
+    // Show error to user
+    if (window.LauncherUI && window.LauncherUI.showError) {
+      window.LauncherUI.showError(errorMsg);
+    } else {
+      alert(errorMsg);
+    }
+
+    // Navigate to settings if possible
+    if (window.LauncherUI && window.LauncherUI.showPage) {
+      window.LauncherUI.showPage('settings-page');
+      window.LauncherUI.setActiveNav('settings');
+    }
+
+    return;
   }
-  
+
+  // Warn if using default 'Player' name (shouldn't happen with new logic, but keep as safety)
+  if (playerName === 'Player') {
+    console.warn('[Launcher] Warning: Using default username "Player"');
+  }
+
+  console.log(`[Launcher] Launching game for: "${playerName}"`);
+
+  // ==========================================================================
+  // STEP 2: Load other settings from backend
+  // ==========================================================================
+  let javaPath = '';
+  try {
+    if (window.electronAPI && window.electronAPI.loadJavaPath) {
+      javaPath = await window.electronAPI.loadJavaPath() || '';
+    }
+  } catch (error) {
+    console.error('[Launcher] Error loading Java path:', error);
+  }
+
   let gpuPreference = 'auto';
   try {
     if (window.electronAPI && window.electronAPI.loadGpuPreference) {
       gpuPreference = await window.electronAPI.loadGpuPreference();
     }
   } catch (error) {
-    console.error('Error loading GPU preference:', error);
+    console.error('[Launcher] Error loading GPU preference:', error);
   }
 
+  // ==========================================================================
+  // STEP 3: Start launch process
+  // ==========================================================================
   if (window.LauncherUI) window.LauncherUI.showProgress();
   isDownloading = true;
   if (playBtn) {
@@ -227,8 +281,9 @@ export async function launch() {
     if (window.LauncherUI) window.LauncherUI.updateProgress({ message: startingMsg });
 
     if (window.electronAPI && window.electronAPI.launchGame) {
+      // Pass playerName from config - backend will validate again
       const result = await window.electronAPI.launchGame(playerName, javaPath, '', gpuPreference);
-      
+
       isDownloading = false;
 
       if (window.LauncherUI) {
@@ -243,7 +298,35 @@ export async function launch() {
           }, 500);
         }
       } else {
-        console.error('Launch failed:', result.error);
+        console.error('[Launcher] Launch failed:', result.error);
+
+        // Handle specific error cases
+        if (result.needsUsername) {
+          const errorMsg = window.i18n
+            ? window.i18n.t('errors.noUsername')
+            : 'Please set your username in Settings before playing.';
+
+          if (window.LauncherUI && window.LauncherUI.showError) {
+            window.LauncherUI.showError(errorMsg);
+          } else {
+            alert(errorMsg);
+          }
+
+          // Navigate to settings
+          if (window.LauncherUI && window.LauncherUI.showPage) {
+            window.LauncherUI.showPage('settings-page');
+            window.LauncherUI.setActiveNav('settings');
+          }
+        } else if (result.error) {
+          // Show generic error
+          const errorMsg = window.i18n
+            ? window.i18n.t('errors.launchFailed').replace('{error}', result.error)
+            : `Launch failed: ${result.error}`;
+
+          if (window.LauncherUI && window.LauncherUI.showError) {
+            window.LauncherUI.showError(errorMsg);
+          }
+        }
       }
     } else {
       isDownloading = false;
@@ -260,7 +343,13 @@ export async function launch() {
       window.LauncherUI.hideProgress();
     }
     resetPlayButton();
-    console.error('Launch error:', error);
+    console.error('[Launcher] Launch error:', error);
+
+    // Show error to user
+    const errorMsg = error.message || 'Unknown launch error';
+    if (window.LauncherUI && window.LauncherUI.showError) {
+      window.LauncherUI.showError(errorMsg);
+    }
   }
 }
 

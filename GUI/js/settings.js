@@ -446,9 +446,26 @@ async function savePlayerName() {
       return;
     }
 
-    await window.electronAPI.saveUsername(playerName);
+    const result = await window.electronAPI.saveUsername(playerName);
+
+    // Check if save was successful
+    if (result && result.success === false) {
+      console.error('[Settings] Failed to save username:', result.error);
+      const errorMsg = window.i18n
+        ? window.i18n.t('notifications.playerNameSaveFailed')
+        : `Failed to save player name: ${result.error || 'Unknown error'}`;
+      showNotification(errorMsg, 'error');
+      return;
+    }
+
     const successMsg = window.i18n ? window.i18n.t('notifications.playerNameSaved') : 'Player name saved successfully';
     showNotification(successMsg, 'success');
+
+    // Refresh UUID display since it may have changed for the new username
+    await loadCurrentUuid();
+
+    // Also refresh the UUID list to update which entry is marked as current
+    await loadAllUuids();
 
   } catch (error) {
     console.error('Error saving player name:', error);
@@ -573,11 +590,26 @@ export function getCurrentJavaPath() {
 }
 
 
+/**
+ * Get current player name from UI input
+ * Returns null if no name is set (caller must handle this)
+ * NOTE: launcher.js now loads username directly from backend config
+ * This function is used for display purposes only
+ */
 export function getCurrentPlayerName() {
   if (settingsPlayerName && settingsPlayerName.value.trim()) {
     return settingsPlayerName.value.trim();
   }
-  return 'Player';
+  // Return null instead of 'Player' - caller must handle missing username
+  return null;
+}
+
+/**
+ * Get current player name with fallback for display purposes only
+ * DO NOT use this for launching game - use backend loadUsername() instead
+ */
+export function getCurrentPlayerNameForDisplay() {
+  return getCurrentPlayerName() || 'Player';
 }
 
 window.openGameLocation = openGameLocation;
@@ -587,6 +619,7 @@ document.addEventListener('DOMContentLoaded', initSettings);
 window.SettingsAPI = {
   getCurrentJavaPath,
   getCurrentPlayerName,
+  getCurrentPlayerNameForDisplay,
   reloadBranch: loadVersionBranch
 };
 
@@ -729,6 +762,9 @@ async function loadAllUuids() {
           </div>
           <div class="uuid-item-actions">
             ${mapping.isCurrent ? '<div class="uuid-item-current-badge">Current</div>' : ''}
+            ${!mapping.isCurrent ? `<button class="uuid-item-btn switch" onclick="switchToUsername('${escapeHtml(mapping.username)}')" title="Switch to this identity">
+              <i class="fas fa-user-check"></i>
+            </button>` : ''}
             <button class="uuid-item-btn copy" onclick="copyUuid('${mapping.uuid}')" title="Copy UUID">
               <i class="fas fa-copy"></i>
             </button>
@@ -813,7 +849,17 @@ async function setCustomUuid() {
 async function performSetCustomUuid(uuid) {
   try {
     if (window.electronAPI && window.electronAPI.setUuidForUser) {
-      const username = getCurrentPlayerName();
+      // IMPORTANT: Use saved username from config, not unsaved DOM input
+      // This prevents setting UUID for wrong user if username field was edited but not saved
+      let username = null;
+      if (window.electronAPI.loadUsername) {
+        username = await window.electronAPI.loadUsername();
+      }
+      if (!username) {
+        const msg = window.i18n ? window.i18n.t('notifications.noUsername') : 'No username configured. Please save your username first.';
+        showNotification(msg, 'error');
+        return;
+      }
       const result = await window.electronAPI.setUuidForUser(username, uuid);
 
       if (result.success) {
@@ -849,6 +895,73 @@ window.copyUuid = async function (uuid) {
     showNotification(msg, 'error');
   }
 };
+
+/**
+ * Switch to a different username/UUID identity
+ * This changes the active username to use that username's UUID
+ */
+window.switchToUsername = async function (username) {
+  try {
+    const message = window.i18n
+      ? window.i18n.t('confirm.switchUsernameMessage').replace('{username}', username)
+      : `Switch to username "${username}"? This will change your active player identity.`;
+    const title = window.i18n ? window.i18n.t('confirm.switchUsernameTitle') : 'Switch Identity';
+    const confirmBtn = window.i18n ? window.i18n.t('confirm.switchUsernameButton') : 'Switch';
+    const cancelBtn = window.i18n ? window.i18n.t('common.cancel') : 'Cancel';
+
+    showCustomConfirm(
+      message,
+      title,
+      async () => {
+        await performSwitchToUsername(username);
+      },
+      null,
+      confirmBtn,
+      cancelBtn
+    );
+  } catch (error) {
+    console.error('Error in switchToUsername:', error);
+    const msg = window.i18n ? window.i18n.t('notifications.switchUsernameFailed') : 'Failed to switch username';
+    showNotification(msg, 'error');
+  }
+};
+
+async function performSwitchToUsername(username) {
+  try {
+    if (!window.electronAPI || !window.electronAPI.saveUsername) {
+      throw new Error('API not available');
+    }
+
+    const result = await window.electronAPI.saveUsername(username);
+
+    if (result && result.success === false) {
+      throw new Error(result.error || 'Failed to save username');
+    }
+
+    // Update the username input field
+    if (settingsPlayerName) {
+      settingsPlayerName.value = username;
+    }
+
+    // Refresh the current UUID display
+    await loadCurrentUuid();
+
+    // Refresh the UUID list to show new "Current" badge
+    await loadAllUuids();
+
+    const msg = window.i18n
+      ? window.i18n.t('notifications.switchUsernameSuccess').replace('{username}', username)
+      : `Switched to "${username}" successfully!`;
+    showNotification(msg, 'success');
+
+  } catch (error) {
+    console.error('Error switching username:', error);
+    const msg = window.i18n
+      ? window.i18n.t('notifications.switchUsernameFailed')
+      : `Failed to switch username: ${error.message}`;
+    showNotification(msg, 'error');
+  }
+}
 
 window.deleteUuid = async function (username) {
   try {

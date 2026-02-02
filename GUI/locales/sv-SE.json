@@ -211,7 +211,11 @@
     "modsDeleteFailed": "Misslyckades med att ta bort modd: {error}",
     "modsModNotFound": "Moddinformation hittades inte",
     "hwAccelSaved": "Hårdvaruaccelerationsinställning sparad",
-    "hwAccelSaveFailed": "Misslyckades med att spara hårdvaruaccelerationsinställning"
+    "hwAccelSaveFailed": "Misslyckades med att spara hårdvaruaccelerationsinställning",
+    "noUsername": "Inget användarnamn konfigurerat. Vänligen spara ditt användarnamn först.",
+    "switchUsernameSuccess": "Bytte till \"{username}\" framgångsrikt!",
+    "switchUsernameFailed": "Misslyckades med att byta användarnamn",
+    "playerNameTooLong": "Spelarnamnet måste vara 16 tecken eller mindre"
   },
   "confirm": {
     "defaultTitle": "Bekräfta åtgärd",
@@ -226,7 +230,10 @@
     "deleteUuidButton": "Ta bort",
     "uninstallGameTitle": "Avinstallera spel",
     "uninstallGameMessage": "Är du säker på att du vill avinstallera Hytale? Alla spelfiler kommer att tas bort.",
-    "uninstallGameButton": "Avinstallera"
+    "uninstallGameButton": "Avinstallera",
+    "switchUsernameTitle": "Byt identitet",
+    "switchUsernameMessage": "Byta till användarnamn \"{username}\"? Detta kommer att ändra din nuvarande spelaridentitet.",
+    "switchUsernameButton": "Byt"
   },
   "progress": {
     "initializing": "Initierar...",

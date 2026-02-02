@@ -7,7 +7,19 @@ const { spawn } = require('child_process');
 const { v4: uuidv4 } = require('uuid');
 const { getResolvedAppDir, findClientPath } = require('../core/paths');
 const { setupWaylandEnvironment, setupGpuEnvironment } = require('../utils/platformUtils');
-const { saveUsername, saveInstallPath, loadJavaPath, getUuidForUser, getAuthServerUrl, getAuthDomain, loadVersionBranch, loadVersionClient, saveVersionClient } = require('../core/config');
+const {
+  saveInstallPath,
+  loadJavaPath,
+  getUuidForUser,
+  getAuthServerUrl,
+  getAuthDomain,
+  loadVersionBranch,
+  loadVersionClient,
+  saveVersionClient,
+  loadUsername,
+  hasUsername,
+  checkLaunchReady
+} = require('../core/config');
 const { resolveJavaPath, getJavaExec, getBundledJavaPath, detectSystemJava, JAVA_EXECUTABLE } = require('./javaManager');
 const { getLatestClientVersion } = require('../services/versionManager');
 const { FORCE_CLEAN_INSTALL_VERSION, CLEAN_INSTALL_TEST_VERSION } = require('../core/testConfig');
@@ -104,8 +116,56 @@ function generateLocalTokens(uuid, name) {
   };
 }
 
-async function launchGame(playerName = 'Player', progressCallback, javaPathOverride, installPathOverride, gpuPreference = 'auto', branchOverride = null) {
-  // Synchronize server list on every game launch
+async function launchGame(playerNameOverride = null, progressCallback, javaPathOverride, installPathOverride, gpuPreference = 'auto', branchOverride = null) {
+  // ==========================================================================
+  // CACHE INVALIDATION: Clear proxyClient module cache to force fresh .env load
+  // This prevents stale cached values from affecting multiple launch attempts
+  // ==========================================================================
+  try {
+    const proxyClientPath = require.resolve('../utils/proxyClient');
+    if (require.cache[proxyClientPath]) {
+      delete require.cache[proxyClientPath];
+      console.log('[Launcher] Cleared proxyClient cache for fresh .env load');
+    }
+  } catch (cacheErr) {
+    console.warn('[Launcher] Could not clear proxyClient cache:', cacheErr.message);
+  }
+
+  // ==========================================================================
+  // STEP 1: Validate player identity FIRST (before any other operations)
+  // ==========================================================================
+  const launchState = checkLaunchReady();
+
+  // Load username from config - single source of truth
+  let playerName = loadUsername();
+
+  if (!playerName) {
+    // No username configured - this is a critical error
+    const error = new Error('No username configured. Please set your username in Settings before playing.');
+    console.error('[Launcher] Launch blocked:', error.message);
+    throw error;
+  }
+
+  // Allow override only if explicitly provided (for testing/migration)
+  if (playerNameOverride && typeof playerNameOverride === 'string' && playerNameOverride.trim()) {
+    const overrideName = playerNameOverride.trim();
+    if (overrideName !== playerName && overrideName !== 'Player') {
+      console.warn(`[Launcher] Username override requested: "${overrideName}" (saved: "${playerName}")`);
+      // Use override for this session but DON'T save it - config is source of truth
+      playerName = overrideName;
+    }
+  }
+
+  // Warn if using default 'Player' name (likely misconfiguration)
+  if (playerName === 'Player') {
+    console.warn('[Launcher] Warning: Using default username "Player". This may cause cosmetic issues.');
+  }
+
+  console.log(`[Launcher] Launching game for player: "${playerName}"`);
+
+  // ==========================================================================
+  // STEP 2: Synchronize server list
+  // ==========================================================================
   try {
     console.log('[Launcher] Synchronizing server list...');
     await syncServerList();
@@ -113,11 +173,14 @@ async function launchGame(playerName = 'Player', progressCallback, javaPathOverr
     console.warn('[Launcher] Server list sync failed, continuing launch:', syncError.message);
   }
 
+  // ==========================================================================
+  // STEP 3: Setup paths and directories
+  // ==========================================================================
   const branch = branchOverride || loadVersionBranch();
   const customAppDir = getResolvedAppDir(installPathOverride);
   const customGameDir = path.join(customAppDir, branch, 'package', 'game', 'latest');
   const customJreDir = path.join(customAppDir, branch, 'package', 'jre', 'latest');
-  
+
   // NEW 2.2.0: Use centralized UserData location
   const userDataDir = getUserDataPath();
 
@@ -128,7 +191,10 @@ async function launchGame(playerName = 'Player', progressCallback, javaPathOverr
     throw new Error('Game is not installed. Please install the game first.');
   }
 
-  saveUsername(playerName);
+  // NOTE: We do NOT save username here anymore - username is only saved
+  // when user explicitly changes it in Settings. This prevents accidental
+  // overwrites from race conditions or default values.
+
   if (installPathOverride) {
     saveInstallPath(installPathOverride);
   }
@@ -287,14 +353,12 @@ exec "$REAL_JAVA" "\${ARGS[@]}"
   console.log('Starting game...');
   console.log(`Command: "${clientPath}" ${args.join(' ')}`);
 
-   const env = { ...process.env };
+  const env = { ...process.env };
 
-   const waylandEnv = setupWaylandEnvironment();
-   Object.assign(env, waylandEnv);
-
-   const gpuEnv = setupGpuEnvironment(gpuPreference);
-   Object.assign(env, gpuEnv);
-
+  const waylandEnv = setupWaylandEnvironment();
+  Object.assign(env, waylandEnv);
+  const gpuEnv = setupGpuEnvironment(gpuPreference);
+  Object.assign(env, gpuEnv);
   // Linux: Replace bundled libzstd.so with system version to fix glibc 2.41+ crash
   // The bundled libzstd causes "free(): invalid pointer" on Steam Deck / Ubuntu LTS
   if (process.platform === 'linux' && process.env.HYTALE_NO_LIBZSTD_FIX !== '1') {
@@ -304,9 +368,9 @@ exec "$REAL_JAVA" "\${ARGS[@]}"
 
     // Common system libzstd paths
     const systemLibzstdPaths = [
+      '/usr/lib64/libzstd.so.1',                  // Fedora/RHEL
       '/usr/lib/libzstd.so.1',                    // Arch Linux, Steam Deck
-      '/usr/lib/x86_64-linux-gnu/libzstd.so.1',   // Debian/Ubuntu
-      '/usr/lib64/libzstd.so.1'                   // Fedora/RHEL
+      '/usr/lib/x86_64-linux-gnu/libzstd.so.1'    // Debian/Ubuntu
     ];
 
     let systemLibzstd = null;
@@ -358,23 +422,35 @@ exec "$REAL_JAVA" "\${ARGS[@]}"
 
     const child = spawn(clientPath, args, spawnOptions);
 
+    // Release process reference immediately so it's truly independent
+    // This works on all platforms (Windows, macOS, Linux)
+    child.unref();
+
     console.log(`Game process started with PID: ${child.pid}`);
 
     let hasExited = false;
     let outputReceived = false;
+    let launchCheckTimeout;
 
-    child.stdout.on('data', (data) => {
-      outputReceived = true;
-      console.log(`Game output: ${data.toString().trim()}`);
-    });
+    if (child.stdout) {
+      child.stdout.on('data', (data) => {
+        outputReceived = true;
+        const msg = data.toString().trim();
+        console.log(`Game output: ${msg}`);
+      });
+    }
 
-    child.stderr.on('data', (data) => {
-      outputReceived = true;
-      console.error(`Game error: ${data.toString().trim()}`);
-    });
+    if (child.stderr) {
+      child.stderr.on('data', (data) => {
+        outputReceived = true;
+        const msg = data.toString().trim();
+        console.error(`Game error: ${msg}`);
+      });
+    }
 
     child.on('error', (error) => {
       hasExited = true;
+      clearTimeout(launchCheckTimeout);
       console.error(`Failed to start game process: ${error.message}`);
       if (progressCallback) {
         progressCallback(`Failed to start game: ${error.message}`, -1, null, null, null);
@@ -383,30 +459,30 @@ exec "$REAL_JAVA" "\${ARGS[@]}"
 
     child.on('exit', (code, signal) => {
       hasExited = true;
+      clearTimeout(launchCheckTimeout);
+      
       if (code !== null) {
         console.log(`Game process exited with code ${code}`);
-        if (code !== 0 && progressCallback) {
-          progressCallback(`Game exited with error code ${code}`, -1, null, null, null);
+        if (code !== 0) {
+          console.error(`[Launcher] Game crashed or exited with error code ${code}`);
+          if (progressCallback) {
+            progressCallback(`Game exited with error code ${code}`, -1, null, null, null);
+          }
         }
       } else if (signal) {
         console.log(`Game process terminated by signal ${signal}`);
       }
     });
 
-    // Monitor game process status in background
-    setTimeout(() => {
-      if (!hasExited) {
-        console.log('Game appears to be running successfully');
-        child.unref();
-        if (progressCallback) {
-          progressCallback('Game launched successfully', 100, null, null, null);
-        }
-      } else if (!outputReceived) {
-        console.warn('Game process exited immediately with no output - possible issue with game files or dependencies');
-      }
-    }, 3000);
+    // Process is detached and unref'd - it runs independently from the launcher
+    // We cannot reliably detect if the game window actually appears from here,
+    // so we report success after spawning. stdout/stderr logging above provides debugging info.
+    console.log('Game process spawned and detached successfully');
+    if (progressCallback) {
+      progressCallback('Game launched successfully', 100, null, null, null);
+    }
 
-    // Return immediately, don't wait for setTimeout
+    // Return immediately after spawn
     return { success: true, installed: true, launched: true, pid: child.pid };
   } catch (spawnError) {
     console.error(`Error spawning game process: ${spawnError.message}`);
@@ -417,10 +493,26 @@ exec "$REAL_JAVA" "\${ARGS[@]}"
   }
 }
 
-async function launchGameWithVersionCheck(playerName = 'Player', progressCallback, javaPathOverride, installPathOverride, gpuPreference = 'auto', branchOverride = null) {
+async function launchGameWithVersionCheck(playerNameOverride = null, progressCallback, javaPathOverride, installPathOverride, gpuPreference = 'auto', branchOverride = null) {
   try {
+    // ==========================================================================
+    // PRE-LAUNCH VALIDATION: Check username is configured
+    // ==========================================================================
+    const launchState = checkLaunchReady();
+
+    if (!launchState.hasUsername) {
+      const error = 'No username configured. Please set your username in Settings before playing.';
+      console.error('[Launcher] Launch blocked:', error);
+      if (progressCallback) {
+        progressCallback(error, -1, null, null, null);
+      }
+      return { success: false, error: error, needsUsername: true };
+    }
+
+    console.log(`[Launcher] Pre-launch check passed. Username: "${launchState.username}"`);
+
     const branch = branchOverride || loadVersionBranch();
-    
+
     if (progressCallback) {
       progressCallback('Checking for updates...', 0, null, null, null);
     }
@@ -474,7 +566,7 @@ async function launchGameWithVersionCheck(playerName = 'Player', progressCallbac
       progressCallback('Launching game...', 80, null, null, null);
     }
 
-    const launchResult = await launchGame(playerName, progressCallback, javaPathOverride, installPathOverride, gpuPreference, branch);
+    const launchResult = await launchGame(playerNameOverride, progressCallback, javaPathOverride, installPathOverride, gpuPreference, branch);
     
     // Ensure we always return a result
     if (!launchResult) {
